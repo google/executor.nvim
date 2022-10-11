@@ -1,4 +1,5 @@
 local Popup = require("nui.popup")
+local Split = require("nui.split")
 local Input = require("nui.input")
 local event = require("nui.utils.autocmd").event
 
@@ -6,10 +7,12 @@ local M = {}
 
 M._settings = {
   use_ansi_esc_plugin = false,
+  use_split = false,
 }
 
 M.configure = function(config)
   M._settings.use_ansi_esc_plugin = config.use_ansi_esc_plugin
+  M._settings.use_split = config.use_split
 end
 
 M.trigger_set_command_input = function(callback_fn)
@@ -147,6 +150,47 @@ M._make_popup = function(title, lines)
   end, { once = true })
 end
 
+M._make_split = function(lines)
+  M._split = Split({
+    position = "right",
+    size = "20%",
+    buf_options = {
+      modifiable = false,
+      readonly = true,
+    },
+  })
+
+  -- TODO: this bit is shared between popup and split
+  local trimmed_lines = {}
+  for _, line in ipairs(lines) do
+    if line ~= nil and line ~= "" then
+      local line_to_store = line
+      if M._settings.use_ansi_esc_plugin == false then
+        line_to_store = line
+          :gsub("\x1b%[%d+;%d+;%d+;%d+;%d+m", "")
+          :gsub("\x1b%[%d+;%d+;%d+;%d+m", "")
+          :gsub("\x1b%[%d+;%d+;%d+m", "")
+          :gsub("\x1b%[%d+;%d+m", "")
+          :gsub("\x1b%[%d+m", "")
+      end
+
+      table.insert(trimmed_lines, line_to_store)
+    end
+  end
+  vim.api.nvim_buf_set_lines(M._split.bufnr, 0, 1, false, trimmed_lines)
+  M._split:mount()
+  if M._settings.use_ansi_esc_plugin then
+    vim.api.nvim_cmd({ cmd = "AnsiEsc" }, { output = false })
+  end
+  -- Ensure if the user uses :q or similar to destroy it, that we tidy up.
+  M._split:on({ event.BufWinLeave }, function()
+    vim.schedule(function()
+      M._split:unmount()
+      M._split = nil
+    end)
+  end, { once = true })
+end
+
 M._collect_stdout = function(_, data)
   M._state.last_stdout = data
 end
@@ -204,22 +248,20 @@ M.run_task = function()
   })
 end
 
-M.show_popup = function()
-  -- If winid is nill, the user may have :q it, so we need to recreate it.
+M._show_popup = function()
+  -- If winid is nil, the user may have :q it, so we need to recreate it.
   if M._popup and M._popup.winid == nil then
     M._popup:unmount()
     M._popup = nil
   end
 
   if M._popup == nil then
-    M._popup = nil
     local title = "Task finished"
     local output = M._state.last_exit_code > 0 and M._state.last_stderr or M._state.last_stdout
     -- Sometimes issues go to stdout.
     if M._state.last_exit_code > 0 and #output == 1 and output[1] == "" then
       output = M._state.last_stdout
     end
-    print(vim.inspect(M._state))
 
     if M._state.last_exit_code > 0 then
       title = "Task error"
@@ -230,16 +272,45 @@ M.show_popup = function()
   end
 end
 
-M.hide_popup = function()
-  if M._popup ~= nil then
-    M._popup:hide()
+M._show_split = function()
+  -- If winid is nil, the user may have :q it, so we need to recreate it.
+  if M._split and M._split.winid == nil then
+    M._split:unmount()
+    M._split = nil
+  end
+  if M._split == nil then
+    -- TODO: this is duplicated.
+    local output = M._state.last_exit_code > 0 and M._state.last_stderr or M._state.last_stdout
+    -- Sometimes issues go to stdout.
+    if M._state.last_exit_code > 0 and #output == 1 and output[1] == "" then
+      output = M._state.last_stdout
+    end
+
+    M._make_split(output)
+  else
+    M._split:show()
   end
 end
 
--- M._make_notification_popup()
--- M._make_popup()
+M.show_detail = function()
+  if M._settings.use_split then
+    M._show_split()
+  else
+    M._show_popup()
+  end
+end
 
--- M.run_task()
+M.hide_detail = function()
+  if M._settings.use_split then
+    if M._split ~= nil then
+      M._split:hide()
+    end
+  else
+    if M._popup ~= nil then
+      M._popup:hide()
+    end
+  end
+end
 
 M.run = function()
   if M._stored_task_command == nil then
