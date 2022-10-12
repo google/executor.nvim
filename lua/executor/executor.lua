@@ -3,15 +3,15 @@ local Split = require("nui.split")
 local Input = require("nui.input")
 local event = require("nui.utils.autocmd").event
 
+local Output = require("executor.output")
+
 local M = {}
 
 M._settings = {
-  use_ansi_esc_plugin = false,
   use_split = false,
 }
 
 M.configure = function(config)
-  M._settings.use_ansi_esc_plugin = config.use_ansi_esc_plugin
   M._settings.use_split = config.use_split
 end
 
@@ -50,7 +50,6 @@ M._stored_task_command = nil
 M._state = {
   running = false,
   last_stdout = nil,
-  last_stderr = nil,
   last_exit_code = nil,
 }
 
@@ -112,7 +111,7 @@ M._make_popup = function(title, lines)
       },
     },
     buf_options = {
-      modifiable = false,
+      modifiable = true,
       readonly = true,
     },
     win_options = {
@@ -120,27 +119,9 @@ M._make_popup = function(title, lines)
     },
   })
 
-  local trimmed_lines = {}
-  for _, line in ipairs(lines) do
-    if line ~= nil and line ~= "" then
-      local line_to_store = line
-      if M._settings.use_ansi_esc_plugin == false then
-        line_to_store = line
-          :gsub("\x1b%[%d+;%d+;%d+;%d+;%d+m", "")
-          :gsub("\x1b%[%d+;%d+;%d+;%d+m", "")
-          :gsub("\x1b%[%d+;%d+;%d+m", "")
-          :gsub("\x1b%[%d+;%d+m", "")
-          :gsub("\x1b%[%d+m", "")
-      end
+  Output.write_data(M._popup.bufnr, lines)
 
-      table.insert(trimmed_lines, line_to_store)
-    end
-  end
-  vim.api.nvim_buf_set_lines(M._popup.bufnr, 0, 1, false, trimmed_lines)
   M._popup:mount()
-  if M._settings.use_ansi_esc_plugin then
-    vim.api.nvim_cmd({ cmd = "AnsiEsc" }, { output = false })
-  end
   -- Ensure if the user uses :q or similar to destroy it, that we tidy up.
   M._popup:on({ event.BufWinLeave }, function()
     vim.schedule(function()
@@ -155,33 +136,13 @@ M._make_split = function(lines)
     position = "right",
     size = "20%",
     buf_options = {
-      modifiable = false,
-      readonly = true,
+      modifiable = true,
+      readonly = false,
     },
   })
+  Output.write_data(M._split.bufnr, lines)
 
-  -- TODO: this bit is shared between popup and split
-  local trimmed_lines = {}
-  for _, line in ipairs(lines) do
-    if line ~= nil and line ~= "" then
-      local line_to_store = line
-      if M._settings.use_ansi_esc_plugin == false then
-        line_to_store = line
-          :gsub("\x1b%[%d+;%d+;%d+;%d+;%d+m", "")
-          :gsub("\x1b%[%d+;%d+;%d+;%d+m", "")
-          :gsub("\x1b%[%d+;%d+;%d+m", "")
-          :gsub("\x1b%[%d+;%d+m", "")
-          :gsub("\x1b%[%d+m", "")
-      end
-
-      table.insert(trimmed_lines, line_to_store)
-    end
-  end
-  vim.api.nvim_buf_set_lines(M._split.bufnr, 0, 1, false, trimmed_lines)
   M._split:mount()
-  if M._settings.use_ansi_esc_plugin then
-    vim.api.nvim_cmd({ cmd = "AnsiEsc" }, { output = false })
-  end
   -- Ensure if the user uses :q or similar to destroy it, that we tidy up.
   M._split:on({ event.BufWinLeave }, function()
     vim.schedule(function()
@@ -194,12 +155,22 @@ end
 M._collect_stdout = function(_, data)
   M._state.last_stdout = data
 end
-M._collect_stderr = function(_, data)
-  M._state.last_stderr = data
-end
 M._on_exit = function(_, exit_code)
   M._state.running = false
   M._state.last_exit_code = exit_code
+
+  -- If we have a popup or split, we need to update it here. This ensures if
+  -- the user hasn't closed the view between tests runs that we still update
+  -- it.
+
+  local output = Output.output_for_state(M._state)
+  if M._popup and M._popup.winid then
+    Output.write_data(M._popup.bufnr, output)
+  end
+  if M._split and M._split.winid then
+    Output.write_data(M._split.bufnr, output)
+  end
+
   if exit_code > 0 then
     M._show_notification("✖ Task errored", true)
   else
@@ -236,14 +207,14 @@ M.run_task = function()
   end
 
   M._state.running = true
-
   M._show_notification("Running...", false)
 
   vim.fn.jobstart(M._stored_task_command, {
+    -- pty means that stderr is ignored, and all output goes to stdout, so
+    -- that's why stderr is ignored here.
+    pty = true,
     stdout_buffered = true,
-    stderr_buffered = true,
     on_stdout = M._collect_stdout,
-    on_stderr = M._collect_stderr,
     on_exit = M._on_exit,
   })
 end
@@ -257,11 +228,7 @@ M._show_popup = function()
 
   if M._popup == nil then
     local title = "Task finished"
-    local output = M._state.last_exit_code > 0 and M._state.last_stderr or M._state.last_stdout
-    -- Sometimes issues go to stdout.
-    if M._state.last_exit_code > 0 and #output == 1 and output[1] == "" then
-      output = M._state.last_stdout
-    end
+    local output = Output.output_for_state(M._state)
 
     if M._state.last_exit_code > 0 then
       title = "Task error"
@@ -279,13 +246,7 @@ M._show_split = function()
     M._split = nil
   end
   if M._split == nil then
-    -- TODO: this is duplicated.
-    local output = M._state.last_exit_code > 0 and M._state.last_stderr or M._state.last_stdout
-    -- Sometimes issues go to stdout.
-    if M._state.last_exit_code > 0 and #output == 1 and output[1] == "" then
-      output = M._state.last_stdout
-    end
-
+    local output = Output.output_for_state(M._state)
     M._make_split(output)
   else
     M._split:show()
