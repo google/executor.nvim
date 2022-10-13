@@ -20,20 +20,23 @@ Public.setup = function(config)
   Executor.configure(config)
 end
 
-vim.api.nvim_create_user_command("V2ShowDetail", function()
+vim.api.nvim_create_user_command("ExecutorShowDetail", function()
   Executor.show_detail()
 end, {})
 
-vim.api.nvim_create_user_command("V2HideDetail", function()
+vim.api.nvim_create_user_command("ExecutorHideDetail", function()
   Executor.hide_detail()
 end, {})
 
-vim.api.nvim_create_user_command("V2SetTaskCommand", function()
+vim.api.nvim_create_user_command("ExecutorToggleDetail", function()
+  Executor.toggle_detail()
+end, {})
+
+vim.api.nvim_create_user_command("ExecutorSetCommand", function()
   Executor.trigger_set_command_input(function() end)
 end, {})
 
--- TODO: take input for one-off?
-vim.api.nvim_create_user_command("V2TaskRunner", function()
+vim.api.nvim_create_user_command("ExecutorRun", function()
   Executor.run()
 end, { bang = true, nargs = "*" })
 

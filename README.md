@@ -1,53 +1,42 @@
-# New Project Template
+# Executor.nvim
 
-This repository contains a template that can be used to seed a repository for a
-new Google open source project.
+This is not an officially supported Google product
 
-See [go/releasing](http://go/releasing) (available externally at
-https://opensource.google/docs/releasing/) for more information about
-releasing a new Google open source project.
+Executor.nvim is a plugin that allows you to run command line tasks in the
+background and be notified of results.
 
-This template uses the Apache license, as is Google's default.  See the
-documentation for instructions on using alternate license.
+It is primarily designed for running tests, but any task can be run using it.
 
-## How to use this template
+## Installation
 
-1. Clone it from GitHub.
-    * There is no reason to fork it.
-1. Create a new local repository and copy the files from this repo into it.
-1. Modify README.md and docs/contributing.md to represent your project, not the
-   template project.
-1. Develop your new project!
+Install via your favourite plugin manager. **You also need to install
+[`nui.nvim`](https://github.com/MunifTanjim/nui.nvim)** as this plugin depends
+on it.
 
-``` shell
-git clone https://github.com/google/new-project
-mkdir my-new-thing
-cd my-new-thing
-git init
-cp -r ../new-project/* ../new-project/.github .
-git add *
-git commit -a -m 'Boilerplate for new Google open source project'
-```
+## Usage
 
-## Source Code Headers
+A typical workflow looks like:
 
-Every file containing source code must include copyright and license
-information. This includes any JS/CSS files that you might be serving out to
-browsers. (This is to help well-intentioned people avoid accidental copying that
-doesn't comply with the license.)
+1. `:ExecutorRun`: runs your given task. If it's the first time you've run it,
+   you will be prompted for a command. After that, it will remember and re-use
+   your command (See `:ExecutorSetCommand` if you'd like to change it).
 
-Apache header:
+2. The task will run in the background. You will get a small notification when
+   the task has finished, and it will tell you if it was a success or not. This
+   is based on the exit code of the command you ran.
 
-    Copyright 2022 Google LLC
+3. You can use `:ExecutorShowDetail` to reveal the detail window showing the
+   task output. By default this will open in a floating window, but it can be
+   configured to use a split too.
 
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
+4. `:ExecutorHideDetail` will hide the detail window. By default it will open
+   in a floating window, but it can be configured to use a split too.
 
-        https://www.apache.org/licenses/LICENSE-2.0
+5. `:ExecutorToggleDetail` will hide the detail view if it is visible,
+   otherwise it will show it.
 
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
+## Configuration
+
+You can configure the plugin to use a split, rather than a popup. See `:h
+executor.nvim` for full details.
+

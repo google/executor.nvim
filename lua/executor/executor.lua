@@ -1,3 +1,18 @@
+--[[
+Copyright 2022 Google LLC
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   https://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+--]]
+
 local Popup = require("nui.popup")
 local Split = require("nui.split")
 local Input = require("nui.input")
@@ -9,10 +24,14 @@ local M = {}
 
 M._settings = {
   use_split = false,
+  split = {
+    position = "right",
+    size = "30%",
+  },
 }
 
 M.configure = function(config)
-  M._settings.use_split = config.use_split
+  M._settings = vim.tbl_deep_extend("force", M._settings, config)
 end
 
 M.trigger_set_command_input = function(callback_fn)
@@ -51,6 +70,7 @@ M._state = {
   running = false,
   last_stdout = nil,
   last_exit_code = nil,
+  showing_detail = false,
 }
 
 M.set_task_command = function(cmd)
@@ -111,6 +131,7 @@ M._make_popup = function(title, lines)
       },
     },
     buf_options = {
+      -- Has to be modifiable as we send data to it from chan_send.
       modifiable = true,
       readonly = true,
     },
@@ -127,17 +148,19 @@ M._make_popup = function(title, lines)
     vim.schedule(function()
       M._popup:unmount()
       M._popup = nil
+      M._state.showing_detail = false
     end)
   end, { once = true })
 end
 
 M._make_split = function(lines)
   M._split = Split({
-    position = "right",
-    size = "20%",
+    position = M._settings.split.position,
+    size = M._settings.split.size,
     buf_options = {
+      -- Has to be modifiable as we send data to it from chan_send.
       modifiable = true,
-      readonly = false,
+      readonly = true,
     },
   })
   Output.write_data(M._split.bufnr, lines)
@@ -148,6 +171,7 @@ M._make_split = function(lines)
     vim.schedule(function()
       M._split:unmount()
       M._split = nil
+      M._state.showing_detail = false
     end)
   end, { once = true })
 end
@@ -253,7 +277,23 @@ M._show_split = function()
   end
 end
 
+M.toggle_detail = function()
+  if M._state.showing_detail == true then
+    -- Need to ensure that we definitely are still showing the detail
+    -- If the user has `:q` on the detail view, we might have the flag set to `true` but it actually have gone.
+    local actually_showing_detail = (M._popup and M._popup.winid) or (M._split and M._split.winid)
+    if actually_showing_detail then
+      M.hide_detail()
+    else
+      M.show_detail()
+    end
+  else
+    M.show_detail()
+  end
+end
+
 M.show_detail = function()
+  M._state.showing_detail = true
   if M._settings.use_split then
     M._show_split()
   else
@@ -262,6 +302,8 @@ M.show_detail = function()
 end
 
 M.hide_detail = function()
+  M._state.showing_detail = false
+
   if M._settings.use_split then
     if M._split ~= nil then
       M._split:hide()
