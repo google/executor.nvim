@@ -1,11 +1,12 @@
 # Executor.nvim
 
-This is not an officially supported Google product
+_This is not an officially supported Google product._
 
 Executor.nvim is a plugin that allows you to run command line tasks in the
 background and be notified of results.
 
-It is primarily designed for running tests, but any task can be run using it.
+It is primarily designed for running tests, but any command line task can be
+run using it.
 
 ## Installation
 
@@ -34,6 +35,17 @@ A typical workflow looks like:
 
 5. `:ExecutorToggleDetail` will hide the detail view if it is visible,
    otherwise it will show it.
+
+## Key mappings
+
+**There are no mappings provided by default, you should set these yourself.**
+
+For example:
+
+```lua
+vim.api.nvim_set_keymap("n", "<leader>er", ":ExecutorRun<CR>", {})
+vim.api.nvim_set_keymap("n", "<leader>ev", ":ExecutorToggleDetail<CR>", {})
+```
 
 ## Configuration
 

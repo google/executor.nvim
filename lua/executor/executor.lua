@@ -57,7 +57,20 @@ M.trigger_set_command_input = function(callback_fn)
       M._stored_task_command = value
       callback_fn()
     end,
+    on_close = function()
+      -- Nothing to do here.
+    end,
   })
+
+  -- Make <ESC> close the input
+  input_component:map("n", "<Esc>", function()
+    input_component:unmount()
+  end, { noremap = true })
+
+  -- Make q close the input.
+  input_component:map("n", "q", function()
+    input_component:unmount()
+  end, { noremap = true })
 
   input_component:mount()
   input_component:on(event.BufLeave, function()

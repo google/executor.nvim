@@ -66,9 +66,9 @@ to each option.
 Available commands:
 
 * `ExecutorRun`: run the stored command. Will prompt for the command if it
-* does not exist.
+* does not exist. Use `<Esc>` or `q` in the initial text prompt to cancel.
 * `ExecutorSetCommand`: change the command that runs when `ExecutorRun` is
-* invoked.
+* invoked. You can use `<Esc>` or `q` in normal mode to cancel this command.
 * `ExecutorShowDetail`: reveal the details window for the last execution run.
 * `ExecutorHideDetail`: hide the details window for the last execution run.
 * `ExecutorToggleDetail`: toggle the visibility of the details window.
