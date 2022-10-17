@@ -36,14 +36,21 @@ end
 
 M.trigger_set_command_input = function(callback_fn)
   local input_component = Input({
+    relative = "editor",
     position = "50%",
     size = {
       width = 50,
     },
     border = {
-      style = "single",
+      style = "rounded",
+      padding = {
+        top = 1,
+        bottom = 1,
+        left = 2,
+        right = 2,
+      },
       text = {
-        top = "Commmand to run:",
+        top = "Executor.nvim: enter a command to run",
         top_align = "center",
       },
     },
@@ -100,7 +107,7 @@ M._make_notification_popup = function(text)
     enter = false,
     focusable = false,
     zindex = 50,
-    relative = "win",
+    relative = "editor",
     border = {
       padding = {
         top = 0,
@@ -129,7 +136,7 @@ M._make_popup = function(title, lines)
     enter = true,
     focusable = true,
     zindex = 50,
-    relative = "win",
+    relative = "editor",
     border = {
       padding = {
         top = 2,
