@@ -102,6 +102,7 @@ M._state = {
   last_stdout = nil,
   last_exit_code = nil,
   showing_detail = false,
+  notification_timer = nil,
 }
 
 M.set_task_command = function(cmd)
@@ -240,22 +241,26 @@ M._on_exit = function(_, exit_code)
   end
 end
 
--- TODO: we need to track timers; if we need to show a new
--- notification before a timer has expired, we need to cancel
--- the timer for the notification and immediately remove it.
 M._show_notification = function(text, timeout)
+  if M._state.notification_timer ~= nil then
+    M._state.notification_timer:close()
+    M._state.notification_timer = nil
+  end
+
   if M._notification_popup ~= nil then
     M._notification_popup:unmount()
     M._notification_popup = nil
   end
+
   M._make_notification_popup(text)
   if timeout then
-    local timer = vim.loop.new_timer()
-    timer:start(
+    M._state.notification_timer = vim.loop.new_timer()
+    M._state.notification_timer:start(
       5000,
       0,
       vim.schedule_wrap(function()
         M._notification_popup:unmount()
+        M._state.notification_timer:close()
       end)
     )
   end
