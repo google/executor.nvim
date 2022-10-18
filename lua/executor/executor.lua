@@ -36,6 +36,9 @@ M._settings = {
     width = POPUP_WIDTH,
     height = POPUP_HEIGHT,
   },
+  output_filter = function(lines)
+    return lines
+  end,
 }
 
 M.configure = function(config)
@@ -171,7 +174,7 @@ M._make_popup = function(title, lines)
   })
 
   M._popup:mount()
-  Output.write_data(M._popup.bufnr, lines)
+  Output.write_data(M._popup.bufnr, M._settings.output_filter, lines)
 
   -- Ensure if the user uses :q or similar to destroy it, that we tidy up.
   M._popup:on({ event.BufWinLeave }, function()
@@ -187,6 +190,7 @@ M._make_split = function(lines)
   M._split = Split({
     position = M._settings.split.position,
     size = M._settings.split.size,
+    enter = false,
     buf_options = {
       -- Has to be modifiable and readonly as we send data to it from chan_send.
       -- We also mount it before writing text, so that the chan_send command
@@ -197,12 +201,14 @@ M._make_split = function(lines)
   })
 
   M._split:mount()
-  Output.write_data(M._split.bufnr, lines)
+  Output.write_data(M._split.bufnr, M._settings.output_filter, lines)
   -- Ensure if the user uses :q or similar to destroy it, that we tidy up.
   M._split:on({ event.BufWinLeave }, function()
     vim.schedule(function()
-      M._split:unmount()
-      M._split = nil
+      if M._split ~= nil then
+        M._split:unmount()
+        M._split = nil
+      end
       M._state.showing_detail = false
     end)
   end, { once = true })
@@ -221,10 +227,10 @@ M._on_exit = function(_, exit_code)
 
   local output = Output.output_for_state(M._state)
   if M._popup and M._popup.winid then
-    Output.write_data(M._popup.bufnr, output)
+    Output.write_data(M._popup.bufnr, M._settings.output_filter, output)
   end
   if M._split and M._split.winid then
-    Output.write_data(M._split.bufnr, output)
+    Output.write_data(M._split.bufnr, M._settings.output_filter, output)
   end
 
   if exit_code > 0 then
@@ -234,6 +240,9 @@ M._on_exit = function(_, exit_code)
   end
 end
 
+-- TODO: we need to track timers; if we need to show a new
+-- notification before a timer has expired, we need to cancel
+-- the timer for the notification and immediately remove it.
 M._show_notification = function(text, timeout)
   if M._notification_popup ~= nil then
     M._notification_popup:unmount()
@@ -256,6 +265,13 @@ M.run_task = function()
   if M._popup ~= nil then
     M._popup:unmount()
     M._popup = nil
+  end
+
+  -- Empty the split before re-running. This ensures that the
+  -- next run is outputted correctly with no weird chunks of whitespace.
+  if M._split ~= nil and M._split.bufnr ~= nil then
+    local channel_id = vim.api.nvim_open_term(M._split.bufnr, {})
+    vim.api.nvim_chan_send(channel_id, "")
   end
 
   if M._stored_task_command == nil then
