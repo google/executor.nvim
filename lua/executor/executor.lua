@@ -22,11 +22,19 @@ local Output = require("executor.output")
 
 local M = {}
 
+local POPUP_WIDTH = math.floor(vim.o.columns * 3 / 5)
+local POPUP_HEIGHT = vim.o.lines - 20
+local SPLIT_WIDTH = math.floor(vim.o.columns * 1 / 4)
+
 M._settings = {
-  use_split = false,
+  use_split = true,
   split = {
     position = "right",
-    size = "30%",
+    size = SPLIT_WIDTH,
+  },
+  popup = {
+    width = POPUP_WIDTH,
+    height = POPUP_HEIGHT,
   },
 }
 
@@ -130,8 +138,8 @@ M._make_popup = function(title, lines)
   M._popup = Popup({
     position = "50%",
     size = {
-      width = 80,
-      height = 40,
+      width = M._settings.popup.width,
+      height = M._settings.popup.height,
     },
     enter = true,
     focusable = true,
@@ -151,18 +159,20 @@ M._make_popup = function(title, lines)
       },
     },
     buf_options = {
-      -- Has to be modifiable as we send data to it from chan_send.
+      -- Has to be modifiable and readonly as we send data to it from chan_send.
+      -- We also mount it before writing text, so that the chan_send command
+      -- wraps the lines at the right width.
       modifiable = true,
-      readonly = true,
+      readonly = false,
     },
     win_options = {
       winhighlight = "Normal:Normal,FloatBorder:FloatBorder",
     },
   })
 
+  M._popup:mount()
   Output.write_data(M._popup.bufnr, lines)
 
-  M._popup:mount()
   -- Ensure if the user uses :q or similar to destroy it, that we tidy up.
   M._popup:on({ event.BufWinLeave }, function()
     vim.schedule(function()
@@ -178,14 +188,16 @@ M._make_split = function(lines)
     position = M._settings.split.position,
     size = M._settings.split.size,
     buf_options = {
-      -- Has to be modifiable as we send data to it from chan_send.
+      -- Has to be modifiable and readonly as we send data to it from chan_send.
+      -- We also mount it before writing text, so that the chan_send command
+      -- wraps the lines at the right width.
       modifiable = true,
-      readonly = true,
+      readonly = false,
     },
   })
-  Output.write_data(M._split.bufnr, lines)
 
   M._split:mount()
+  Output.write_data(M._split.bufnr, lines)
   -- Ensure if the user uses :q or similar to destroy it, that we tidy up.
   M._split:on({ event.BufWinLeave }, function()
     vim.schedule(function()
@@ -257,6 +269,7 @@ M.run_task = function()
     -- pty means that stderr is ignored, and all output goes to stdout, so
     -- that's why stderr is ignored here.
     pty = true,
+    -- width = 50,
     stdout_buffered = true,
     on_stdout = M._collect_stdout,
     on_exit = M._on_exit,

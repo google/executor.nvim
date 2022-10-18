@@ -27,8 +27,9 @@ A typical workflow looks like:
    is based on the exit code of the command you ran.
 
 3. You can use `:ExecutorShowDetail` to reveal the detail window showing the
-   task output. By default this will open in a floating window, but it can be
-   configured to use a split too.
+   task output. By default this will open in a split window on the right hand
+   side, but it can be configured to use a floating popup. The size and
+   position of the split can be configured also.
 
 4. `:ExecutorHideDetail` will hide the detail window. By default it will open
    in a floating window, but it can be configured to use a split too.
@@ -49,6 +50,7 @@ vim.api.nvim_set_keymap("n", "<leader>ev", ":ExecutorToggleDetail<CR>", {})
 
 ## Configuration
 
-You can configure the plugin to use a split, rather than a popup. See `:h
-executor.nvim` for full details.
+You can configure between using a popup window and a split, and adjust their
+sizes.
+See `:h executor.nvim` for full details.
 

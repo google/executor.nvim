@@ -44,16 +44,25 @@ the default options.
 
   require('executor').setup({
     -- View details of the task run in a split, rather than a popup window.
-    use_split = false
+    -- Set this to `false` to use a popup.
+    use_split = true,
 
     -- Configure the split. These are ignored if you are using a popup.
     split = {
       -- One of "top", "right", "bottom" or "left"
       position = "right",
-      -- The size of the split. If it's a percentage, this will be calculated
-      -- relative to the window. If it's a number, it will be that many
-      -- rows/columns wide/tall.
-      size = "30%",
+      -- The number of columns to take up. This sets the split to 1/4 of the
+      -- space. If you're using the split at the top or bottom, you could also
+      -- use `vim.o.lines` to set this relative to the height of the window.
+      size = math.floor(vim.o.columns * 1/4)
+    },
+
+    -- Configure the popup. These are ignored if you are using a split.
+    popup = {
+      -- Sets the width of the popup to 3/5ths of the screen's width.
+      width = math.floor(vim.o.columns * 3/5),
+      -- Sets the height to almost full height, allowing for some padding.
+      height = vim.o.lines - 20,
     }
   })
 
