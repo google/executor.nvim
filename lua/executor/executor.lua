@@ -261,6 +261,7 @@ M._show_notification = function(text, timeout)
       vim.schedule_wrap(function()
         M._notification_popup:unmount()
         M._state.notification_timer:close()
+        M._state.notification_timer = nil
       end)
     )
   end

@@ -43,6 +43,10 @@ M._clean_lines = function(input_lines)
   return trimmed_lines
 end
 
+M.process_lines = function(cmd, filter_function, input_lines)
+  return filter_function(cmd, M._clean_lines(input_lines))
+end
+
 M.write_data = function(cmd, bufnr, filter_function, input_lines)
   local trimmed_lines = filter_function(cmd, M._clean_lines(input_lines))
   local channel_id = vim.api.nvim_open_term(bufnr, {})

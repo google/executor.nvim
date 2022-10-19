@@ -14,4 +14,16 @@ describe("Executor", function()
       assert.are.same(output, { "hello", "\n", "world" })
     end)
   end)
+
+  describe("filtering", function()
+    it("uses the provided filter function to remove lines", function()
+      local input = { "hello", "world" }
+      local filter_function = spy.new(function(cmd, lines)
+        return { "new lines" }
+      end)
+      local output = Output.process_lines("npm test", filter_function, input)
+      assert.are.same(output, { "new lines" })
+      assert.spy(filter_function).was_called_with("npm test", input)
+    end)
+  end)
 end)
