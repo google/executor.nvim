@@ -8,6 +8,15 @@ background and be notified of results.
 It is primarily designed for running tests, but any command line task can be
 run using it.
 
+Once the task is run, you can see the output in a split:
+
+https://user-images.githubusercontent.com/193238/196712287-d374d435-fafd-4347-ad0b-7a44bd6fb1b4.mov
+
+Or in a popup:
+
+https://user-images.githubusercontent.com/193238/196712389-5884f468-20c9-4f2b-9919-c14d9f1ac42e.mov
+
+
 ## Installation
 
 Install via your favourite plugin manager. **You also need to install
