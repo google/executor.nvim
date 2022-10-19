@@ -36,7 +36,7 @@ M._settings = {
     width = POPUP_WIDTH,
     height = POPUP_HEIGHT,
   },
-  output_filter = function(lines)
+  output_filter = function(command, lines)
     return lines
   end,
 }
@@ -175,7 +175,7 @@ M._make_popup = function(title, lines)
   })
 
   M._popup:mount()
-  Output.write_data(M._popup.bufnr, M._settings.output_filter, lines)
+  Output.write_data(M._stored_task_command, M._popup.bufnr, M._settings.output_filter, lines)
 
   -- Ensure if the user uses :q or similar to destroy it, that we tidy up.
   M._popup:on({ event.BufWinLeave }, function()
@@ -202,7 +202,7 @@ M._make_split = function(lines)
   })
 
   M._split:mount()
-  Output.write_data(M._split.bufnr, M._settings.output_filter, lines)
+  Output.write_data(M._stored_task_command, M._split.bufnr, M._settings.output_filter, lines)
   -- Ensure if the user uses :q or similar to destroy it, that we tidy up.
   M._split:on({ event.BufWinLeave }, function()
     vim.schedule(function()
@@ -228,10 +228,10 @@ M._on_exit = function(_, exit_code)
 
   local output = Output.output_for_state(M._state)
   if M._popup and M._popup.winid then
-    Output.write_data(M._popup.bufnr, M._settings.output_filter, output)
+    Output.write_data(M._stored_task_command, M._popup.bufnr, M._settings.output_filter, output)
   end
   if M._split and M._split.winid then
-    Output.write_data(M._split.bufnr, M._settings.output_filter, output)
+    Output.write_data(M._stored_task_command, M._split.bufnr, M._settings.output_filter, output)
   end
 
   if exit_code > 0 then

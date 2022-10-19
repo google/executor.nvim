@@ -37,6 +37,22 @@ Once installed, initialise the plugin with:
   require('executor').setup({})
 
 ================================================================================
+                                                                    *commands*
+
+No keys are bound by default; it is left up to you to bind your preferred keys
+to each option.
+
+Available commands:
+
+* `ExecutorRun`: run the stored command. Will prompt for the command if it
+* does not exist. Use `<Esc>` or `q` in the initial text prompt to cancel.
+* `ExecutorSetCommand`: change the command that runs when `ExecutorRun` is
+* invoked. You can use `<Esc>` or `q` in normal mode to cancel this command.
+* `ExecutorShowDetail`: reveal the details window for the last execution run.
+* `ExecutorHideDetail`: hide the details window for the last execution run.
+* `ExecutorToggleDetail`: toggle the visibility of the details window.
+
+================================================================================
                                                                *configuration*
 
 `setup` takes a Lua table with the following options. The options provided are
@@ -63,24 +79,56 @@ the default options.
       width = math.floor(vim.o.columns * 3/5),
       -- Sets the height to almost full height, allowing for some padding.
       height = vim.o.lines - 20,
-    }
+    },
+    -- Filter output from commands. See *filtering_output* below for more
+    details.
+    output_filter = function(command, lines)
+      return lines
+    end
   })
 
 ================================================================================
-                                                                    *commands*
+                                                            *filtering_output*
 
-No keys are bound by default; it is left up to you to bind your preferred keys
-to each option.
+Executor provides a hook for you to filter any output from a task before it's
+shown to you. This can be useful if a command outputs debugging lines that you
+want to avoid, and cannot be configured via command line flags.
 
-Available commands:
+Note: you should always try to configure this via the command itself; this
+option is designed as a last resort.
 
-* `ExecutorRun`: run the stored command. Will prompt for the command if it
-* does not exist. Use `<Esc>` or `q` in the initial text prompt to cancel.
-* `ExecutorSetCommand`: change the command that runs when `ExecutorRun` is
-* invoked. You can use `<Esc>` or `q` in normal mode to cancel this command.
-* `ExecutorShowDetail`: reveal the details window for the last execution run.
-* `ExecutorHideDetail`: hide the details window for the last execution run.
-* `ExecutorToggleDetail`: toggle the visibility of the details window.
+To add filtering, define the `output_filter` configuration function. This
+function takes two arguments:
+  * `command`: this is a string that is the command that was run. This allows
+             you to configure filtering conditionally based on commands.
+
+  * `lines`: this is a Lua table containing all the lines from the output.
+
+The function should return a Lua table containing all the lines you want to
+keep.
+
+For example, this function removes any lines that contain the string "foo", if
+the command was "npm test":
+
+```lua
+output_filter = function(command, lines)
+  if command == "npm test" then
+    local kept_lines = {}
+    for _, line in ipairs(lines) do
+      if string.substr(line, "foo") == nil then
+        table.insert(kept_lines, line)
+      end
+    end
+    return kept_lines
+  end
+
+  return lines
+end
+```
+
+You have a lot of freedom here, whatever table of lines you return will be
+used, so you are free to add/edit/remove lines as required.
+
 
 
 vim:tw=78:ts=8:ft=help:norl:
