@@ -113,7 +113,7 @@ M._make_notification_popup = function(text)
   M._notification_popup = Popup({
     position = "95%",
     size = {
-      width = 14,
+      width = #text,
       height = 1,
     },
     enter = false,
@@ -290,7 +290,7 @@ M.run_task = function()
   end
 
   M._state.running = true
-  M._show_notification("Running...", false)
+  M._show_notification("⟳ " .. M._stored_task_command, false)
 
   vim.fn.jobstart(M._stored_task_command, {
     -- pty means that stderr is ignored, and all output goes to stdout, so
