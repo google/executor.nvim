@@ -191,6 +191,11 @@ M._make_split = function(lines)
   M._split = Split({
     position = M._settings.split.position,
     size = M._settings.split.size,
+    -- Ensures the split is relative to the entire editor, not the active window.
+    -- e.g. if you have two splits: A | B
+    -- And the split configured to open on the right.
+    -- With the "editor" setting, the split we open will always be to the right of B
+    relative = "editor",
     enter = false,
     buf_options = {
       -- Has to be modifiable and readonly as we send data to it from chan_send.
