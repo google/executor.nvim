@@ -18,12 +18,54 @@ describe("Executor", function()
   describe("filtering", function()
     it("uses the provided filter function to remove lines", function()
       local input = { "hello", "world" }
-      local filter_function = spy.new(function(cmd, lines)
+      local filter_function = spy.new(function()
         return { "new lines" }
       end)
       local output = Output.process_lines("npm test", filter_function, input)
       assert.are.same(output, { "new lines" })
       assert.spy(filter_function).was_called_with("npm test", input)
+    end)
+  end)
+
+  describe("statusline", function()
+    it("returns nothing if there is no prior run and we are not running", function()
+      local output = Output.statusline_output({
+        last_exit_code = nil,
+        running = false,
+      })
+      assert.are.same(output, "")
+    end)
+
+    it("returns an ellipsis if we are running", function()
+      local output = Output.statusline_output({
+        last_exit_code = nil,
+        running = true,
+      })
+      assert.are.same(output, "[Executor: …]")
+    end)
+
+    it("returns an ellipsis if we are running even if there is prior output", function()
+      local output = Output.statusline_output({
+        last_exit_code = 0,
+        running = true,
+      })
+      assert.are.same(output, "[Executor: …]")
+    end)
+
+    it("returns a cross if the last run failed", function()
+      local output = Output.statusline_output({
+        last_exit_code = 1,
+        running = false,
+      })
+      assert.are.same(output, "[Executor: ✖]")
+    end)
+
+    it("returns a tick if the last run succeeded", function()
+      local output = Output.statusline_output({
+        last_exit_code = 0,
+        running = false,
+      })
+      assert.are.same(output, "[Executor: ✓]")
     end)
   end)
 end)

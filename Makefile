@@ -1,0 +1,2 @@
+test:
+	busted lua/tests
