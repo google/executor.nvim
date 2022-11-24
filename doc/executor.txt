@@ -18,9 +18,9 @@ is based on the exit code of the command you ran.
 task output. By default this will open in a floating window, but it can be
 configured to use a split too.
 
-4. `:ExecutorHideDetail` will hide the detail window. By default it will open in a floating
-window, but it can be configured to use a split too. See *configuration*
-below.
+4. `:ExecutorHideDetail` will hide the detail window. By default it will open
+in a floating window, but it can be configured to use a split too. See
+*configuration* below.
 
 5. `:ExecutorToggleDetail` will hide the detail view if it is visible,
 otherwise it will show it.
@@ -45,11 +45,25 @@ to each option.
 Available commands:
 
 * `ExecutorRun`: run the stored command. Will prompt for the command if it
-* does not exist. Use `<Esc>` or `q` in the initial text prompt to cancel.
+  does not exist. Use `<Esc>` or `q` in the initial text prompt to cancel.
+
 * `ExecutorSetCommand`: change the command that runs when `ExecutorRun` is
-* invoked. You can use `<Esc>` or `q` in normal mode to cancel this command.
+  invoked. You can use `<Esc>` or `q` in normal mode to cancel this command.
+
 * `ExecutorShowDetail`: reveal the details window for the last execution run.
+
 * `ExecutorHideDetail`: hide the details window for the last execution run.
+
+* `ExecutorToggleDetail`: toggle the visibility of the details window.
+
+* `ExecutorSwapToSplit`: changes your view setting to render in a split, not a
+  popup. Useful if you prefer a popup most of the time but want to temporarily
+  swap for a particular task.
+
+* `ExecutorSwapToPopup`: changes your view setting to render in a popup, not a
+  split. Useful if you prefer a popup most of the time but want to temporarily
+  swap for a particular task.
+
 * `ExecutorToggleDetail`: toggle the visibility of the details window.
 
 ================================================================================

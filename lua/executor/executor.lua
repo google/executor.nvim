@@ -352,6 +352,10 @@ M.toggle_detail = function()
   end
 end
 
+M.set_output_setting = function(use_split)
+  M._settings.use_split = use_split
+end
+
 M.show_detail = function()
   M._state.showing_detail = true
   if M._settings.use_split then
