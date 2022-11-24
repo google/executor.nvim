@@ -21,6 +21,28 @@ M.output_for_state = function(state)
   return output
 end
 
+M.statusline_output = function(state)
+  -- We only output to the statusline if either:
+  -- 1) we are running currently
+  -- 2) we have a prior result to show
+  if state.last_exit_code == nil and state.running == false then
+    return ""
+  end
+
+  local prefix = "[Executor: "
+  local suffix = "]"
+  -- By default, assume the test failed.
+  local result = "✖"
+
+  if state.running then
+    result = "…"
+  elseif state.last_exit_code == 0 then
+    result = "✓"
+  end
+
+  return prefix .. result .. suffix
+end
+
 M._clean_lines = function(input_lines)
   local trimmed_lines = {}
   -- We want to do tidy up on the start of the input and:

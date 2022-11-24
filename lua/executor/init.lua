@@ -13,11 +13,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 --]]
 local Executor = require("executor.executor")
+local Output = require("executor.output")
 
 local Public = {}
 
 Public.setup = function(config)
   Executor.configure(config)
+end
+
+Public.statusline = function()
+  return Output.statusline_output(Executor._state)
 end
 
 vim.api.nvim_create_user_command("ExecutorShowDetail", function()

@@ -23,6 +23,14 @@ Install via your favourite plugin manager. **You also need to install
 [`nui.nvim`](https://github.com/MunifTanjim/nui.nvim)** as this plugin depends
 on it.
 
+And then call the `setup` method:
+
+```lua
+require("executor").setup({})
+```
+
+See `doc/executor.txt` or `:h exectuor.nvim` for configuration options.
+
 ## Usage
 
 A typical workflow looks like:
@@ -62,4 +70,10 @@ vim.api.nvim_set_keymap("n", "<leader>ev", ":ExecutorToggleDetail<CR>", {})
 You can configure between using a popup window and a split, and adjust their
 sizes.
 See `:h executor.nvim` for full details.
+
+## Status line
+
+Executor will pop up when a task succeeds or fails, but you can also include it
+in your status line. Use `require('executor').statusline()` to generate the
+output.
 
