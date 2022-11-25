@@ -66,6 +66,10 @@ Available commands:
 
 * `ExecutorToggleDetail`: toggle the visibility of the details window.
 
+* `ExecutorReset`: will clear the output from the statusline. Useful if your
+  last run was a while ago, and the status output on your statusline is no
+  longer relevant.
+
 ================================================================================
                                                                *configuration*
 

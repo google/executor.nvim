@@ -105,6 +105,11 @@ M._state = {
   notification_timer = nil,
 }
 
+M.reset = function()
+  M._state.last_exit_code = nil
+  M._state.last_stdout = nil
+end
+
 M.set_task_command = function(cmd)
   M._stored_task_command = cmd
 end

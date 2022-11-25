@@ -25,6 +25,10 @@ Public.statusline = function()
   return Output.statusline_output(Executor._state)
 end
 
+vim.api.nvim_create_user_command("ExecutorReset", function()
+  Executor.reset()
+end, {})
+
 vim.api.nvim_create_user_command("ExecutorSwapToSplit", function()
   Executor.set_output_setting(true)
 end, {})
