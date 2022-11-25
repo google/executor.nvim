@@ -112,6 +112,7 @@ M._state = {
 M.reset = function()
   M._state.last_exit_code = nil
   M._state.last_stdout = nil
+  M._stored_task_command = nil
 end
 
 M.set_task_command = function(cmd)
