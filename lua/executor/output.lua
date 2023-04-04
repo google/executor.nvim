@@ -32,7 +32,7 @@ M.statusline_output = function(state)
   local prefix = "[Executor: "
   local suffix = "]"
   -- By default, assume the test failed.
-  local result = "✖"
+  local result = "✖ "
 
   if state.running then
     result = "…"

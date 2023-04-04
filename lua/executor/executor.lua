@@ -39,6 +39,10 @@ M._settings = {
   output_filter = function(command, lines)
     return lines
   end,
+  notifications = {
+    task_started = true,
+    task_completed = true,
+  },
 }
 
 M.configure = function(config)
@@ -244,10 +248,12 @@ M._on_exit = function(_, exit_code)
     Output.write_data(M._stored_task_command, M._split.bufnr, M._settings.output_filter, output)
   end
 
-  if exit_code > 0 then
-    M._show_notification("✖ Task errored", true)
-  else
-    M._show_notification("✓ Task success!", true)
+  if M._settings.notifications.task_completed then
+    if exit_code > 0 then
+      M._show_notification("✖  Task errored", true)
+    else
+      M._show_notification("✓ Task success!", true)
+    end
   end
 end
 
@@ -295,7 +301,9 @@ M.run_task = function()
   end
 
   M._state.running = true
-  M._show_notification("⟳ " .. M._stored_task_command, false)
+  if M._settings.notifications.task_started then
+    M._show_notification("⟳ " .. M._stored_task_command, false)
+  end
 
   vim.fn.jobstart(M._stored_task_command, {
     -- pty means that stderr is ignored, and all output goes to stdout, so

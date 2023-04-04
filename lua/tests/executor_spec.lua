@@ -57,7 +57,7 @@ describe("Executor", function()
         last_exit_code = 1,
         running = false,
       })
-      assert.are.same(output, "[Executor: ✖]")
+      assert.are.same(output, "[Executor: ✖ ]")
     end)
 
     it("returns a tick if the last run succeeded", function()
