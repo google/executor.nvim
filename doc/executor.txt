@@ -102,7 +102,14 @@ the default options.
     details.
     output_filter = function(command, lines)
       return lines
-    end
+    end,
+
+    notifications = {
+      -- Show a popup notification when a task is started.
+      task_started = true,
+      -- Show a popup notification when a task is completed.
+      task_completed = true,
+    }
   })
 
 ================================================================================
