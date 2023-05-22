@@ -75,4 +75,53 @@ M.write_data = function(cmd, bufnr, filter_function, input_lines)
   vim.api.nvim_chan_send(channel_id, table.concat(trimmed_lines, "\n"))
 end
 
+M.preset_menu = function(stored_commands_by_directory, callback_after_choice)
+  local Menu = require("nui.menu")
+  local cwd = vim.loop.cwd()
+  local found_options = {}
+  for directory_name, directory_commands in pairs(stored_commands_by_directory) do
+    if string.find(cwd, directory_name, 1) then
+      for _, command in ipairs(directory_commands) do
+        table.insert(found_options, Menu.item(command))
+      end
+    end
+  end
+
+  if #found_options == 0 then
+    print("Executor.nvim: No stored commands found for this working directory.")
+    return
+  end
+
+  local menu = Menu({
+    position = "50%",
+    size = {
+      width = 50,
+      height = math.max(10, #found_options),
+    },
+    border = {
+      style = "single",
+      text = {
+        top = "Executor.nvim: choose a command",
+        top_align = "center",
+      },
+    },
+    win_options = {
+      winhighlight = "Normal:Normal,FloatBorder:Normal",
+    },
+  }, {
+    lines = found_options,
+    max_width = 45,
+    keymap = {
+      focus_next = { "j", "<Down>", "<Tab>" },
+      focus_prev = { "k", "<Up>", "<S-Tab>" },
+      close = { "<Esc>", "<C-c>" },
+      submit = { "<CR>", "<Space>" },
+    },
+    on_submit = function(item)
+      callback_after_choice(item.text)
+    end,
+  })
+  menu:mount()
+end
+
 return M

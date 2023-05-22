@@ -36,6 +36,7 @@ M._settings = {
     width = POPUP_WIDTH,
     height = POPUP_HEIGHT,
   },
+  stored_commands = {},
   output_filter = function(command, lines)
     return lines
   end,
