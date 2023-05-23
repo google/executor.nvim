@@ -80,7 +80,7 @@ M.preset_menu = function(stored_commands_by_directory, callback_after_choice)
   local cwd = vim.loop.cwd()
   local found_options = {}
   for directory_name, directory_commands in pairs(stored_commands_by_directory) do
-    if string.find(cwd, directory_name, 1) then
+    if string.find(cwd, directory_name, 1, true) then
       for _, command in ipairs(directory_commands) do
         table.insert(found_options, Menu.item(command))
       end
