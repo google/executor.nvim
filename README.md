@@ -16,7 +16,6 @@ Or in a popup:
 
 https://user-images.githubusercontent.com/193238/196712389-5884f468-20c9-4f2b-9919-c14d9f1ac42e.mov
 
-
 ## Installation
 
 Install via your favourite plugin manager. **You also need to install
@@ -28,8 +27,6 @@ And then call the `setup` method:
 ```lua
 require("executor").setup({})
 ```
-
-See `doc/executor.txt` or `:h exectuor.nvim` for configuration options.
 
 ## Usage
 
@@ -56,7 +53,36 @@ A typical workflow looks like:
 
 ## Key mappings
 
-**There are no mappings provided by default, you should set these yourself.**
+No keys are bound by default; it is left up to you to bind your preferred keys
+to each option.
+
+Available commands:
+
+* `ExecutorRun`: run the stored command. Will prompt for the command if it
+  does not exist. Use `<Esc>` or `q` in the initial text prompt to cancel.
+
+* `ExecutorSetCommand`: change the command that runs when `ExecutorRun` is
+  invoked. You can use `<Esc>` or `q` in normal mode to cancel this command.
+
+* `ExecutorShowDetail`: reveal the details window for the last execution run.
+
+* `ExecutorHideDetail`: hide the details window for the last execution run.
+
+* `ExecutorToggleDetail`: toggle the visibility of the details window.
+
+* `ExecutorSwapToSplit`: changes your view setting to render in a split, not a
+  popup. Useful if you prefer a popup most of the time but want to temporarily
+  swap for a particular task.
+
+* `ExecutorSwapToPopup`: changes your view setting to render in a popup, not a
+  split. Useful if you prefer a popup most of the time but want to temporarily
+  swap for a particular task.
+
+* `ExecutorToggleDetail`: toggle the visibility of the details window.
+
+* `ExecutorReset`: will clear the output from the statusline and clear the
+  stored command. Useful if your last run was a while ago, and the status
+  output on your statusline is no longer relevant.
 
 For example:
 
@@ -67,9 +93,46 @@ vim.api.nvim_set_keymap("n", "<leader>ev", ":ExecutorToggleDetail<CR>", {})
 
 ## Configuration
 
-You can configure between using a popup window and a split, and adjust their
-sizes.
-See `:h executor.nvim` for full details.
+`setup` takes a Lua table with the following options. The options provided are
+the default options.
+
+```lua
+require('executor').setup({
+ -- View details of the task run in a split, rather than a popup window.
+ -- Set this to `false` to use a popup.
+ use_split = true,
+
+ -- Configure the split. These are ignored if you are using a popup.
+ split = {
+   -- One of "top", "right", "bottom" or "left"
+   position = "right",
+   -- The number of columns to take up. This sets the split to 1/4 of the
+   -- space. If you're using the split at the top or bottom, you could also
+   -- use `vim.o.lines` to set this relative to the height of the window.
+   size = math.floor(vim.o.columns * 1/4)
+ },
+
+ -- Configure the popup. These are ignored if you are using a split.
+ popup = {
+   -- Sets the width of the popup to 3/5ths of the screen's width.
+   width = math.floor(vim.o.columns * 3/5),
+   -- Sets the height to almost full height, allowing for some padding.
+   height = vim.o.lines - 20,
+ },
+ -- Filter output from commands. See *filtering_output* below for more
+ details.
+ output_filter = function(command, lines)
+   return lines
+ end,
+
+ notifications = {
+   -- Show a popup notification when a task is started.
+   task_started = true,
+   -- Show a popup notification when a task is completed.
+   task_completed = true,
+ }
+})
+```
 
 ## Status line
 
@@ -77,3 +140,43 @@ Executor will pop up when a task succeeds or fails, but you can also include it
 in your status line. Use `require('executor').statusline()` to generate the
 output.
 
+## Filtering output
+
+Executor provides a hook for you to filter any output from a task before it's
+shown to you. This can be useful if a command outputs debugging lines that you
+want to avoid, and cannot be configured via command line flags.
+
+Note: you should always try to configure this via the command itself; this
+option is designed as a last resort.
+
+To add filtering, define the `output_filter` configuration function. This
+function takes two arguments:
+  * `command`: this is a string that is the command that was run. This allows
+             you to configure filtering conditionally based on commands.
+
+  * `lines`: this is a Lua table containing all the lines from the output.
+
+The function should return a Lua table containing all the lines you want to
+keep.
+
+For example, this function removes any lines that contain the string "foo", if
+the command was "npm test":
+
+```lua
+output_filter = function(command, lines)
+  if command == "npm test" then
+    local kept_lines = {}
+    for _, line in ipairs(lines) do
+      if string.substr(line, "foo") == nil then
+        table.insert(kept_lines, line)
+      end
+    end
+    return kept_lines
+  end
+
+  return lines
+end
+```
+
+You have a lot of freedom here, whatever table of lines you return will be
+used, so you are free to add/edit/remove lines as required.
