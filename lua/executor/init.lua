@@ -58,7 +58,7 @@ vim.api.nvim_create_user_command("ExecutorRun", function()
 end, { bang = true, nargs = "*" })
 
 vim.api.nvim_create_user_command("ExecutorShowPresets", function()
-  Output.preset_menu(Executor._settings.stored_commands, function(chosen_option)
+  Output.preset_menu(Executor._settings.preset_commands, function(chosen_option)
     Executor.set_task_command(chosen_option)
     Executor.run()
   end)

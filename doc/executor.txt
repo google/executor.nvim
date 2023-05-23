@@ -70,6 +70,10 @@ Available commands:
   stored command. Useful if your last run was a while ago, and the status
   output on your statusline is no longer relevant.
 
+* `ExecutorShowPresets`: shows a list of preset, stored commands to set as
+  your default. Allows you to predefine command tasks on a per-cwd basis. See
+  *preset-commands* for more.
+
 ================================================================================
                                                                *configuration*
 
@@ -90,6 +94,10 @@ the default options.
       -- use `vim.o.lines` to set this relative to the height of the window.
       size = math.floor(vim.o.columns * 1/4)
     },
+
+    -- Define preset commands per-folder. Empty by default. See
+    *preset-demands* below for more.
+    preset_commands = {}
 
     -- Configure the popup. These are ignored if you are using a split.
     popup = {
@@ -160,5 +168,26 @@ end
 You have a lot of freedom here, whatever table of lines you return will be
 used, so you are free to add/edit/remove lines as required.
 
+================================================================================
+                                                             *preset-commands*
+
+To save yourself repeating commands in the same directory, you can store them
+and select them via a prompt.
+
+Pass a table to the `preset_commands` config setting. Each key should be a
+directory name, or a partial path (it will be matched against the current
+working directory). The value should be a table of commonly used tasks:
+
+```lua
+preset_commands = {
+  ["executor.nvim"] = {
+    "make test",
+  },
+}
+```
+
+You can use `:ExecutorShowPresets` to bring up a UI with these options in.
+Selecting one (using `Enter`) will cause it to be set as the default command
+and then run. You can hit `ESC` to close the menu and not execute any task.
 
 vim:tw=78:ts=8:ft=help:norl:

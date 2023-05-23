@@ -75,11 +75,11 @@ M.write_data = function(cmd, bufnr, filter_function, input_lines)
   vim.api.nvim_chan_send(channel_id, table.concat(trimmed_lines, "\n"))
 end
 
-M.preset_menu = function(stored_commands_by_directory, callback_after_choice)
+M.preset_menu = function(preset_commands_by_directory, callback_after_choice)
   local Menu = require("nui.menu")
   local cwd = vim.loop.cwd()
   local found_options = {}
-  for directory_name, directory_commands in pairs(stored_commands_by_directory) do
+  for directory_name, directory_commands in pairs(preset_commands_by_directory) do
     if string.find(cwd, directory_name, 1, true) then
       for _, command in ipairs(directory_commands) do
         table.insert(found_options, Menu.item(command))
