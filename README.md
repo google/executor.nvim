@@ -180,3 +180,25 @@ end
 
 You have a lot of freedom here, whatever table of lines you return will be
 used, so you are free to add/edit/remove lines as required.
+
+## Preset commands
+
+To save yourself repeating commands in the same directory, you can store them
+and select them via a prompt.
+
+Pass a table to the `preset_commands` config setting. Each key should be a
+directory name, or a partial path (it will be matched against the current
+working directory). The value should be a table of commonly used tasks:
+
+```lua
+preset_commands = {
+  ["executor.nvim"] = {
+    "make test",
+  },
+}
+```
+
+You can use `:ExecutorShowPresets` to bring up a UI with these options in.
+Selecting one (using `Enter`) will cause it to be set as the default command
+and then run. You can hit `ESC` to close the menu and not execute any task.
+
