@@ -1,0 +1,164 @@
+================================================================================
+                                                                 *executor.nvim*
+
+This plugin makes it easy to run commands in the background and know if they
+succeeded or fail.
+
+A typical workflow looks like:
+
+1. `:ExecutorRun`: runs your given task. If it's the first time you've run it,
+you will be prompted for a command. After that, it will remember and re-use
+your command (See `:ExecutorSetCommand` if you'd like to change it).
+
+2. The task will run in the background. You will get a small notification when
+the task has finished, and it will tell you if it was a success or not. This
+is based on the exit code of the command you ran.
+
+3. You can use `:ExecutorShowDetail` to reveal the detail window showing the
+task output. By default this will open in a floating window, but it can be
+configured to use a split too.
+
+4. `:ExecutorHideDetail` will hide the detail window. By default it will open
+in a floating window, but it can be configured to use a split too. See
+*configuration* below.
+
+5. `:ExecutorToggleDetail` will hide the detail view if it is visible,
+otherwise it will show it.
+
+================================================================================
+                                                               *installation*
+
+Install executor.nvim using your preferred plugin manager. This plugin also
+depends on https://github.com/MunifTanjim/nui.nvim, so ensure that is
+installed too.
+
+Once installed, initialise the plugin with:
+
+  require('executor').setup({})
+
+================================================================================
+                                                                    *commands*
+
+No keys are bound by default; it is left up to you to bind your preferred keys
+to each option.
+
+Available commands:
+
+* `ExecutorRun`: run the stored command. Will prompt for the command if it
+  does not exist. Use `<Esc>` or `q` in the initial text prompt to cancel.
+
+* `ExecutorSetCommand`: change the command that runs when `ExecutorRun` is
+  invoked. You can use `<Esc>` or `q` in normal mode to cancel this command.
+
+* `ExecutorShowDetail`: reveal the details window for the last execution run.
+
+* `ExecutorHideDetail`: hide the details window for the last execution run.
+
+* `ExecutorToggleDetail`: toggle the visibility of the details window.
+
+* `ExecutorSwapToSplit`: changes your view setting to render in a split, not a
+  popup. Useful if you prefer a popup most of the time but want to temporarily
+  swap for a particular task.
+
+* `ExecutorSwapToPopup`: changes your view setting to render in a popup, not a
+  split. Useful if you prefer a popup most of the time but want to temporarily
+  swap for a particular task.
+
+* `ExecutorToggleDetail`: toggle the visibility of the details window.
+
+* `ExecutorReset`: will clear the output from the statusline and clear the
+  stored command. Useful if your last run was a while ago, and the status
+  output on your statusline is no longer relevant.
+
+================================================================================
+                                                               *configuration*
+
+`setup` takes a Lua table with the following options. The options provided are
+the default options.
+
+  require('executor').setup({
+    -- View details of the task run in a split, rather than a popup window.
+    -- Set this to `false` to use a popup.
+    use_split = true,
+
+    -- Configure the split. These are ignored if you are using a popup.
+    split = {
+      -- One of "top", "right", "bottom" or "left"
+      position = "right",
+      -- The number of columns to take up. This sets the split to 1/4 of the
+      -- space. If you're using the split at the top or bottom, you could also
+      -- use `vim.o.lines` to set this relative to the height of the window.
+      size = math.floor(vim.o.columns * 1/4)
+    },
+
+    -- Configure the popup. These are ignored if you are using a split.
+    popup = {
+      -- Sets the width of the popup to 3/5ths of the screen's width.
+      width = math.floor(vim.o.columns * 3/5),
+      -- Sets the height to almost full height, allowing for some padding.
+      height = vim.o.lines - 20,
+    },
+    -- Filter output from commands. See *filtering_output* below for more
+    details.
+    output_filter = function(command, lines)
+      return lines
+    end,
+
+    notifications = {
+      -- Show a popup notification when a task is started.
+      task_started = true,
+      -- Show a popup notification when a task is completed.
+      task_completed = true,
+    }
+  })
+
+================================================================================
+                                                            *statusline*
+
+You can use `require('executor').statusline()` to generate text that is shown
+on your statusline.
+
+================================================================================
+                                                            *filtering_output*
+
+Executor provides a hook for you to filter any output from a task before it's
+shown to you. This can be useful if a command outputs debugging lines that you
+want to avoid, and cannot be configured via command line flags.
+
+Note: you should always try to configure this via the command itself; this
+option is designed as a last resort.
+
+To add filtering, define the `output_filter` configuration function. This
+function takes two arguments:
+  * `command`: this is a string that is the command that was run. This allows
+             you to configure filtering conditionally based on commands.
+
+  * `lines`: this is a Lua table containing all the lines from the output.
+
+The function should return a Lua table containing all the lines you want to
+keep.
+
+For example, this function removes any lines that contain the string "foo", if
+the command was "npm test":
+
+```lua
+output_filter = function(command, lines)
+  if command == "npm test" then
+    local kept_lines = {}
+    for _, line in ipairs(lines) do
+      if string.substr(line, "foo") == nil then
+        table.insert(kept_lines, line)
+      end
+    end
+    return kept_lines
+  end
+
+  return lines
+end
+```
+
+You have a lot of freedom here, whatever table of lines you return will be
+used, so you are free to add/edit/remove lines as required.
+
+
+vim:tw=78:ts=8:ft=help:norl:
