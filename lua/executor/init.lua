@@ -64,4 +64,11 @@ vim.api.nvim_create_user_command("ExecutorShowPresets", function()
   end)
 end, {})
 
+vim.api.nvim_create_user_command("ExecutorShowHistory", function()
+  Output.history_menu(Executor._state.command_history, function(chosen_option)
+    Executor.set_task_command(chosen_option)
+    Executor.run()
+  end)
+end, {})
+
 return Public

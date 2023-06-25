@@ -94,8 +94,9 @@ M.preset_menu = function(preset_commands_by_directory, callback_after_choice)
 
   local menu = Menu({
     position = "50%",
+    relative = "editor",
     size = {
-      width = 50,
+      width = "80%",
       height = math.max(10, #found_options),
     },
     border = {
@@ -114,7 +115,51 @@ M.preset_menu = function(preset_commands_by_directory, callback_after_choice)
     keymap = {
       focus_next = { "j", "<Down>", "<Tab>" },
       focus_prev = { "k", "<Up>", "<S-Tab>" },
-      close = { "<Esc>", "<C-c>" },
+      close = { "<Esc>", "<C-c>", "q" },
+      submit = { "<CR>", "<Space>" },
+    },
+    on_submit = function(item)
+      callback_after_choice(item.text)
+    end,
+  })
+  menu:mount()
+end
+M.history_menu = function(command_history, callback_after_choice)
+  if #command_history == 0 then
+    print("Executor.nvim: No command history to show.")
+    return
+  end
+
+  local Menu = require("nui.menu")
+  local menu_items = {}
+  for key, command in pairs(command_history) do
+    table.insert(menu_items, Menu.item(command))
+  end
+
+  local menu = Menu({
+    position = "50%",
+    relative = "editor",
+    size = {
+      width = "80%",
+      height = math.max(10, #command_history),
+    },
+    border = {
+      style = "single",
+      text = {
+        top = "Executor.nvim: choose a command from the history",
+        top_align = "center",
+      },
+    },
+    win_options = {
+      winhighlight = "Normal:Normal,FloatBorder:Normal",
+    },
+  }, {
+    lines = menu_items,
+    max_width = 45,
+    keymap = {
+      focus_next = { "j", "<Down>", "<Tab>" },
+      focus_prev = { "k", "<Up>", "<S-Tab>" },
+      close = { "<Esc>", "<C-c>", "q" },
       submit = { "<CR>", "<Space>" },
     },
     on_submit = function(item)

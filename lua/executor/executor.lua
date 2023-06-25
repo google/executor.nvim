@@ -26,6 +26,15 @@ local POPUP_WIDTH = math.floor(vim.o.columns * 3 / 5)
 local POPUP_HEIGHT = vim.o.lines - 20
 local SPLIT_WIDTH = math.floor(vim.o.columns * 1 / 4)
 
+local table_contains = function(table, element)
+  for _, value in pairs(table) do
+    if value == element then
+      return true
+    end
+  end
+  return false
+end
+
 M._settings = {
   use_split = true,
   split = {
@@ -77,7 +86,7 @@ M.trigger_set_command_input = function(callback_fn)
     prompt = "> ",
     default_value = "",
     on_submit = function(value)
-      M._stored_task_command = value
+      M.set_task_command(value)
       callback_fn()
     end,
     on_close = function()
@@ -108,6 +117,7 @@ M._state = {
   last_exit_code = nil,
   showing_detail = false,
   notification_timer = nil,
+  command_history = {},
 }
 
 M.reset = function()
@@ -118,6 +128,9 @@ end
 
 M.set_task_command = function(cmd)
   M._stored_task_command = cmd
+  if not table_contains(M._state.command_history, cmd) then
+    table.insert(M._state.command_history, cmd)
+  end
 end
 
 M._make_notification_popup = function(text)
