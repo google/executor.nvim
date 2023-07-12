@@ -202,3 +202,10 @@ You can use `:ExecutorShowPresets` to bring up a UI with these options in.
 Selecting one (using `Enter`) will cause it to be set as the default command
 and then run. You can hit `ESC` to close the menu and not execute any task.
 
+
+## Historical commands
+
+Using `:ExecutorShowHistory` will reveal a popup menu which shows all the
+commands you have used Executor to run (limited to that session only - they are
+not persisted). Picking one of these options will then set it as the new
+default task and run it.
