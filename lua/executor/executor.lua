@@ -67,12 +67,12 @@ M.trigger_set_command_input = function(callback_fn)
       width = 50,
     },
     border = {
-      style = "rounded",
+      style = "single",
       padding = {
         top = 1,
         bottom = 1,
-        left = 2,
-        right = 2,
+        left = 1,
+        right = 1,
       },
       text = {
         top = "Executor.nvim: enter a command to run",
@@ -80,7 +80,7 @@ M.trigger_set_command_input = function(callback_fn)
       },
     },
     win_options = {
-      winhighlight = "Normal:Normal,FloatBorder:Normal",
+      winhighlight = "Normal:Normal,FloatBorder:FloatBorder",
     },
   }, {
     prompt = "> ",
