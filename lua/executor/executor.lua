@@ -62,7 +62,7 @@ M.configure = function(config)
   M._settings = vim.tbl_deep_extend("force", M._settings, config)
 end
 
-M.trigger_set_command_input = function(callback_fn)
+M.trigger_set_command_input = function(initial_input_value, callback_fn)
   local input_component = Input({
     relative = "editor",
     position = "50%",
@@ -87,7 +87,7 @@ M.trigger_set_command_input = function(callback_fn)
     },
   }, {
     prompt = "> ",
-    default_value = "",
+    default_value = initial_input_value or "",
     on_submit = function(value)
       M.set_task_command(value)
       callback_fn()
@@ -416,7 +416,7 @@ end
 
 M.run = function()
   if M._stored_task_command == nil then
-    M.trigger_set_command_input(function()
+    M.trigger_set_command_input("", function()
       M.run_task()
     end)
   else
