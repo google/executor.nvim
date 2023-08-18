@@ -37,6 +37,9 @@ end
 
 M._settings = {
   use_split = true,
+  input = {
+    width = math.floor(vim.o.columns * 4 / 5),
+  },
   split = {
     position = "right",
     size = SPLIT_WIDTH,
@@ -64,7 +67,7 @@ M.trigger_set_command_input = function(callback_fn)
     relative = "editor",
     position = "50%",
     size = {
-      width = 50,
+      width = math.floor(vim.o.columns * 4 / 5),
     },
     border = {
       style = "rounded",

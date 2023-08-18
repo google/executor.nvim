@@ -104,6 +104,11 @@ require('executor').setup({
  -- Set this to `false` to use a popup.
  use_split = true,
 
+  -- Configure the width of the input prompt when setting a command.
+  input = {
+    width = math.floor(vim.o.columns * 4/5),
+  },
+
  -- Configure the split. These are ignored if you are using a popup.
  split = {
    -- One of "top", "right", "bottom" or "left"
