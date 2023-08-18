@@ -1,4 +1,4 @@
-*executor.txt*            For NVIM v0.8.0            Last change: 2023 July 12
+*executor.txt*           For NVIM v0.8.0           Last change: 2023 August 18
 
 ==============================================================================
 Table of Contents                                 *executor-table-of-contents*
@@ -97,7 +97,8 @@ Available commands:
 - `ExecutorSwapToPopup`: changes your view setting to render in a popup, not a
     split. Useful if you prefer a popup most of the time but want to temporarily
     swap for a particular task.
-- `ExecutorToggleDetail`: toggle the visibility of the details window.
+- `ExecutorShowPresets`: shows the preset commands set in config.
+- `ExecutorShowHistory`: shows the previous commands run in the session.
 - `ExecutorReset`: will clear the output from the statusline and clear the stored
     command. Useful if your last run was a while ago, and the status output on your
     statusline is no longer relevant.
