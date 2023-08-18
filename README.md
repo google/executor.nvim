@@ -78,7 +78,9 @@ Available commands:
   split. Useful if you prefer a popup most of the time but want to temporarily
   swap for a particular task.
 
-* `ExecutorToggleDetail`: toggle the visibility of the details window.
+* `ExecutorShowPresets`: shows the preset commands set in config.
+  
+* `ExecutorShowHistory`: shows the previous commands run in the session.
 
 * `ExecutorReset`: will clear the output from the statusline and clear the
   stored command. Useful if your last run was a while ago, and the status
