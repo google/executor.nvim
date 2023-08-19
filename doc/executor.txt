@@ -230,6 +230,20 @@ You can use `:ExecutorShowPresets` to bring up a UI with these options in.
 Selecting one (using `Enter`) will cause it to be set as the default command
 and then run. You can hit `ESC` to close the menu and not execute any task.
 
+If you have a command that you need to tweak before running, you can set a
+partial preset:
+
+>lua
+    preset_commands = {
+      ["executor.nvim"] = {
+        { partial = true, cmd = "make test --filter="},
+      },
+    }
+<
+
+When you pick a partial preset from the list you will then be presented with an
+input box where you can edit the command before applying it.
+
 
 HISTORICAL COMMANDS               *executor-executor.nvim-historical-commands*
 
