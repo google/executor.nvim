@@ -82,7 +82,11 @@ M.preset_menu = function(preset_commands_by_directory, callback_after_choice)
   for directory_name, directory_commands in pairs(preset_commands_by_directory) do
     if string.find(cwd, directory_name, 1, true) then
       for _, command in ipairs(directory_commands) do
-        table.insert(found_options, Menu.item(command))
+        if type(command) == "string" then
+          table.insert(found_options, Menu.item(command))
+        elseif command.partial == true then
+          table.insert(found_options, Menu.item("[partial] " .. command.cmd))
+        end
       end
     end
   end

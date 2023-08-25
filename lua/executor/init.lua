@@ -50,7 +50,7 @@ vim.api.nvim_create_user_command("ExecutorToggleDetail", function()
 end, {})
 
 vim.api.nvim_create_user_command("ExecutorSetCommand", function()
-  Executor.trigger_set_command_input(function() end)
+  Executor.trigger_set_command_input("", function() end)
 end, {})
 
 vim.api.nvim_create_user_command("ExecutorRun", function()
@@ -59,8 +59,15 @@ end, { bang = true, nargs = "*" })
 
 vim.api.nvim_create_user_command("ExecutorShowPresets", function()
   Output.preset_menu(Executor._settings.preset_commands, function(chosen_option)
-    Executor.set_task_command(chosen_option)
-    Executor.run()
+    if string.find(chosen_option, "[partial] ", 1, true) then
+      local partial_command = chosen_option:gsub("%[partial%] ", ""):gsub("^%s*(.-)%s*$", "%1")
+      Executor.trigger_set_command_input(partial_command, function()
+        Executor.run()
+      end)
+    else
+      Executor.set_task_command(chosen_option)
+      Executor.run()
+    end
   end)
 end, {})
 

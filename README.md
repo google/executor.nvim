@@ -78,7 +78,9 @@ Available commands:
   split. Useful if you prefer a popup most of the time but want to temporarily
   swap for a particular task.
 
-* `ExecutorToggleDetail`: toggle the visibility of the details window.
+* `ExecutorShowPresets`: shows the preset commands set in config.
+  
+* `ExecutorShowHistory`: shows the previous commands run in the session.
 
 * `ExecutorReset`: will clear the output from the statusline and clear the
   stored command. Useful if your last run was a while ago, and the status
@@ -101,6 +103,11 @@ require('executor').setup({
  -- View details of the task run in a split, rather than a popup window.
  -- Set this to `false` to use a popup.
  use_split = true,
+
+  -- Configure the width of the input prompt when setting a command.
+  input = {
+    width = math.floor(vim.o.columns * 4/5),
+  },
 
  -- Configure the split. These are ignored if you are using a popup.
  split = {
@@ -201,6 +208,19 @@ preset_commands = {
 You can use `:ExecutorShowPresets` to bring up a UI with these options in.
 Selecting one (using `Enter`) will cause it to be set as the default command
 and then run. You can hit `ESC` to close the menu and not execute any task.
+
+If you have a command that you need to tweak before running, you can set a partial preset:
+
+```lua
+preset_commands = {
+  ["executor.nvim"] = {
+    { partial = true, cmd = "make test --filter="},
+  },
+}
+```
+
+When you pick a partial preset from the list you will then be presented with an input box where you can edit the command before applying it.
+
 
 
 ## Historical commands
