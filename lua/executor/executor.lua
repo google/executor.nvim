@@ -39,6 +39,15 @@ M._settings = {
   use_split = true,
   input = {
     width = math.floor(vim.o.columns * 4 / 5),
+    border = {
+      style = "rounded",
+      padding = {
+        top = 1,
+        bottom = 1,
+        left = 2,
+        right = 2,
+      },
+    },
   },
   split = {
     position = "right",
@@ -47,6 +56,15 @@ M._settings = {
   popup = {
     width = POPUP_WIDTH,
     height = POPUP_HEIGHT,
+    border = {
+      padding = {
+        top = 2,
+        bottom = 2,
+        left = 3,
+        right = 3,
+      },
+      style = "rounded",
+    }
   },
   preset_commands = {},
   output_filter = function(command, lines)
@@ -55,6 +73,15 @@ M._settings = {
   notifications = {
     task_started = true,
     task_completed = true,
+    border = {
+      padding = {
+        top = 0,
+        bottom = 0,
+        left = 1,
+        right = 1,
+      },
+      style = "rounded",
+    },
   },
 }
 
@@ -67,16 +94,11 @@ M.trigger_set_command_input = function(initial_input_value, callback_fn)
     relative = "editor",
     position = "50%",
     size = {
-      width = math.floor(vim.o.columns * 4 / 5),
+      width = M._settings.input.width,
     },
     border = {
-      style = "single",
-      padding = {
-        top = 1,
-        bottom = 1,
-        left = 1,
-        right = 1,
-      },
+      style = M._settings.input.border.style,
+      padding = M._settings.input.border.padding,
       text = {
         top = "Executor.nvim: enter a command to run",
         top_align = "center",
@@ -148,13 +170,8 @@ M._make_notification_popup = function(text)
     zindex = 50,
     relative = "editor",
     border = {
-      padding = {
-        top = 0,
-        bottom = 0,
-        left = 1,
-        right = 1,
-      },
-      style = "rounded",
+      padding = M._settings.notifications.border.padding,
+      style = M._settings.notifications.border.style,
     },
     buf_options = {
       modifiable = false,
@@ -177,13 +194,8 @@ M._make_popup = function(title, lines)
     zindex = 50,
     relative = "editor",
     border = {
-      padding = {
-        top = 2,
-        bottom = 2,
-        left = 3,
-        right = 3,
-      },
-      style = "rounded",
+      padding = M._settings.popup.border.padding,
+      style = M._settings.popup.border.style,
       text = {
         top = title,
         top_align = "center",
