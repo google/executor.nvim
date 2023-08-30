@@ -209,7 +209,23 @@ You can use `:ExecutorShowPresets` to bring up a UI with these options in.
 Selecting one (using `Enter`) will cause it to be set as the default command
 and then run. You can hit `ESC` to close the menu and not execute any task.
 
-If you have a command that you need to tweak before running, you can set a partial preset:
+You can also define a command as a function by passing a table with a `cmd` key:
+
+```lua
+preset_commands = {
+  ["executor.nvim"] = {
+    {
+      cmd = function()
+        -- Use bufnr 0 to use current buffer.
+        local buf_name = vim.api.nvim_buf_get_name(0)
+        return "echo 'Buffer name:'" .. buf_name
+      end,
+    },
+  },
+}
+```
+
+If you have a command that you need to tweak before running, you can set it to be partial:
 
 ```lua
 preset_commands = {
@@ -219,7 +235,7 @@ preset_commands = {
 }
 ```
 
-When you pick a partial preset from the list you will then be presented with an input box where you can edit the command before applying it.
+When you pick a partial preset from the list you will then be presented with an input box where you can edit the command before applying it. You can define `cmd` here as a string or a function.
 
 
 

@@ -85,7 +85,15 @@ M.preset_menu = function(preset_commands_by_directory, callback_after_choice)
         if type(command) == "string" then
           table.insert(found_options, Menu.item(command))
         elseif command.partial == true then
-          table.insert(found_options, Menu.item("[partial] " .. command.cmd))
+          local final_cmd = command.cmd
+          if type(command.cmd) == "function" then
+            final_cmd = command.cmd()
+          end
+          table.insert(found_options, Menu.item("[partial] " .. final_cmd))
+        elseif type(command.cmd) == "function" then
+          -- Allow a command to be a function that is executed per-buffer.
+          local final_cmd = command.cmd()
+          table.insert(found_options, Menu.item(final_cmd))
         end
       end
     end
