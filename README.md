@@ -107,6 +107,16 @@ require('executor').setup({
   -- Configure the width of the input prompt when setting a command.
   input = {
     width = math.floor(vim.o.columns * 4/5),
+    -- Border styles
+   border = {
+      style = "rounded",
+      padding = {
+        top = 1,
+        bottom = 1,
+        left = 2,
+        right = 2,
+      },
+   },
   },
 
  -- Configure the split. These are ignored if you are using a popup.
@@ -125,6 +135,16 @@ require('executor').setup({
    width = math.floor(vim.o.columns * 3/5),
    -- Sets the height to almost full height, allowing for some padding.
    height = vim.o.lines - 20,
+    -- Border styles
+   border = {
+      padding = {
+        top = 2,
+        bottom = 2,
+        left = 3,
+        right = 3,
+      },
+      style = "rounded",
+   },
  },
  -- Filter output from commands. See *filtering_output* below for more
  details.
@@ -137,6 +157,16 @@ require('executor').setup({
    task_started = true,
    -- Show a popup notification when a task is completed.
    task_completed = true,
+    -- Border styles
+   border = {
+      padding = {
+        top = 0,
+        bottom = 0,
+        left = 1,
+        right = 1,
+      },
+      style = "rounded",
+   },
  }
 })
 ```
