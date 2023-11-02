@@ -385,6 +385,11 @@ M._show_split = function()
 end
 
 M.toggle_detail = function()
+  -- Don't attempt to show detail if no tests have been run.
+  if M._state.last_stdout == nil then
+    Output.write_data(nil, nil, nil, nil)
+    return
+  end
   if M._state.showing_detail == true then
     -- Need to ensure that we definitely are still showing the detail
     -- If the user has `:q` on the detail view, we might have the flag set to `true` but it actually have gone.

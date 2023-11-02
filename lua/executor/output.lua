@@ -70,6 +70,10 @@ M.process_lines = function(cmd, filter_function, input_lines)
 end
 
 M.write_data = function(cmd, bufnr, filter_function, input_lines)
+  if input_lines == nil then
+    print("Executor.nvim: No test run to show.")
+    return
+  end
   local trimmed_lines = filter_function(cmd, M._clean_lines(input_lines))
   local channel_id = vim.api.nvim_open_term(bufnr, {})
   vim.api.nvim_chan_send(channel_id, table.concat(trimmed_lines, "\n"))
