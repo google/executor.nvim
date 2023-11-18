@@ -58,33 +58,35 @@ to each option.
 
 Available commands:
 
-* `ExecutorRun`: run the stored command. Will prompt for the command if it
+- `ExecutorRun`: run the stored command. Will prompt for the command if it
   does not exist. Use `<Esc>` or `q` in the initial text prompt to cancel.
 
-* `ExecutorSetCommand`: change the command that runs when `ExecutorRun` is
+- `ExecutorSetCommand`: change the command that runs when `ExecutorRun` is
   invoked. You can use `<Esc>` or `q` in normal mode to cancel this command.
 
-* `ExecutorShowDetail`: reveal the details window for the last execution run.
+- `ExecutorShowDetail`: reveal the details window for the last execution run.
 
-* `ExecutorHideDetail`: hide the details window for the last execution run.
+- `ExecutorHideDetail`: hide the details window for the last execution run.
 
-* `ExecutorToggleDetail`: toggle the visibility of the details window.
+- `ExecutorToggleDetail`: toggle the visibility of the details window.
 
-* `ExecutorSwapToSplit`: changes your view setting to render in a split, not a
+- `ExecutorSwapToSplit`: changes your view setting to render in a split, not a
   popup. Useful if you prefer a popup most of the time but want to temporarily
   swap for a particular task.
 
-* `ExecutorSwapToPopup`: changes your view setting to render in a popup, not a
+- `ExecutorSwapToPopup`: changes your view setting to render in a popup, not a
   split. Useful if you prefer a popup most of the time but want to temporarily
   swap for a particular task.
 
-* `ExecutorShowPresets`: shows the preset commands set in config.
-  
-* `ExecutorShowHistory`: shows the previous commands run in the session.
+- `ExecutorShowPresets`: shows the preset commands set in config.
 
-* `ExecutorReset`: will clear the output from the statusline and clear the
+- `ExecutorShowHistory`: shows the previous commands run in the session.
+
+- `ExecutorReset`: will clear the output from the statusline and clear the
   stored command. Useful if your last run was a while ago, and the status
   output on your statusline is no longer relevant.
+
+- `ExecutorOneOff [cmd]`: runs the provided command and shows the results, but does not overwrite your stored command.
 
 For example:
 
@@ -188,10 +190,11 @@ option is designed as a last resort.
 
 To add filtering, define the `output_filter` configuration function. This
 function takes two arguments:
-  * `command`: this is a string that is the command that was run. This allows
-             you to configure filtering conditionally based on commands.
 
-  * `lines`: this is a Lua table containing all the lines from the output.
+- `command`: this is a string that is the command that was run. This allows
+  you to configure filtering conditionally based on commands.
+
+- `lines`: this is a Lua table containing all the lines from the output.
 
 The function should return a Lua table containing all the lines you want to
 keep.
@@ -267,7 +270,21 @@ preset_commands = {
 
 When you pick a partial preset from the list you will then be presented with an input box where you can edit the command before applying it. You can define `cmd` here as a string or a function.
 
+## One-off commands
 
+You may have tasks you want to often run (such as a build script) but not use as your saved Executor task. In this case you can use `:ExecutorOneOff`, passing the command with it:
+
+```
+:ExecutorOneOff npm run build
+```
+
+This will execute `npm run build`, but not overwrite your saved task.
+
+You may want to bind common tasks to a keybinding:
+
+```lua
+vim.api.nvim_set_keymap("n", "<leader>b", ":ExecutorOneOff npm run build<CR>", {})
+```
 
 ## Historical commands
 
