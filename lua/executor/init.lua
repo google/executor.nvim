@@ -42,7 +42,7 @@ Public.commands = {
     Executor.hide_detail()
   end,
   toggle_detail = function()
-    Executor.hide_detail()
+    Executor.toggle_detail()
   end,
   set_command = function()
     Executor.trigger_set_command_input("", function() end)
