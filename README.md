@@ -88,11 +88,39 @@ Available commands:
 
 - `ExecutorOneOff [cmd]`: runs the provided command and shows the results, but does not overwrite your stored command.
 
-For example:
+These options are all available via the Lua API also:
+
+```lua
+local executor = require("executor")
+
+exector.commands.reset()
+exector.commands.swap_to_split()
+exector.commands.swap_to_popup()
+exector.commands.show_detail()
+exector.commands.hide_detail()
+exector.commands.toggle_detail()
+exector.commands.set_command()
+exector.commands.run()
+exector.commands.show_presets()
+exector.commands.show_history()
+exector.commands.run_one_off(cmd)
+```
+
+You can therefore map the Vim commands to a key:
 
 ```lua
 vim.api.nvim_set_keymap("n", "<leader>er", ":ExecutorRun<CR>", {})
 vim.api.nvim_set_keymap("n", "<leader>ev", ":ExecutorToggleDetail<CR>", {})
+```
+
+Or use the Lua API:
+
+```lua
+local executor = require('executor')
+
+vim.keymap.set("n", "<leader>er", function()
+  executor.commands.run()
+end)
 ```
 
 ## Configuration

@@ -25,61 +25,97 @@ Public.statusline = function()
   return Output.statusline_output(Executor._state)
 end
 
+Public.commands = {
+  reset = function()
+    Executor.reset()
+  end,
+  swap_to_split = function()
+    Executor.set_output_setting(true)
+  end,
+  swap_to_popup = function()
+    Executor.set_output_setting(false)
+  end,
+  show_detail = function()
+    Executor.show_detail()
+  end,
+  hide_detail = function()
+    Executor.hide_detail()
+  end,
+  toggle_detail = function()
+    Executor.hide_detail()
+  end,
+  set_command = function()
+    Executor.trigger_set_command_input("", function() end)
+  end,
+  run = function()
+    Executor.run()
+  end,
+  show_presets = function()
+    Output.preset_menu(Executor._settings.preset_commands, function(chosen_option)
+      if string.find(chosen_option, "[partial] ", 1, true) then
+        local partial_command = chosen_option:gsub("%[partial%] ", ""):gsub("^%s*(.-)%s*$", "%1")
+        Executor.trigger_set_command_input(partial_command, function()
+          Executor.run()
+        end)
+      else
+        Executor.set_task_command(chosen_option)
+        Executor.run()
+      end
+    end)
+  end,
+  show_history = function()
+    Output.history_menu(Executor._state.command_history, function(chosen_option)
+      Executor.set_task_command(chosen_option)
+      Executor.run()
+    end)
+  end,
+  run_one_off = function(one_off_command)
+    Executor.run(one_off_command)
+  end,
+}
+
 vim.api.nvim_create_user_command("ExecutorReset", function()
-  Executor.reset()
+  Public.commands.reset()
 end, {})
 
 vim.api.nvim_create_user_command("ExecutorSwapToSplit", function()
-  Executor.set_output_setting(true)
+  Public.commands.swap_to_split()
 end, {})
 
 vim.api.nvim_create_user_command("ExecutorSwapToPopup", function()
-  Executor.set_output_setting(false)
+  Public.commands.swap_to_popup()
 end, {})
 
 vim.api.nvim_create_user_command("ExecutorShowDetail", function()
-  Executor.show_detail()
+  Public.commands.show_detail()
 end, {})
 
 vim.api.nvim_create_user_command("ExecutorHideDetail", function()
-  Executor.hide_detail()
+  Public.commands.hide_detail()
 end, {})
 
 vim.api.nvim_create_user_command("ExecutorToggleDetail", function()
-  Executor.toggle_detail()
+  Public.commands.toggle_detail()
 end, {})
 
 vim.api.nvim_create_user_command("ExecutorSetCommand", function()
-  Executor.trigger_set_command_input("", function() end)
+  Public.commands.set_command()
 end, {})
 
 vim.api.nvim_create_user_command("ExecutorRun", function()
-  Executor.run()
+  Public.commands.run()
 end, { bang = true, nargs = "*" })
 
 vim.api.nvim_create_user_command("ExecutorShowPresets", function()
-  Output.preset_menu(Executor._settings.preset_commands, function(chosen_option)
-    if string.find(chosen_option, "[partial] ", 1, true) then
-      local partial_command = chosen_option:gsub("%[partial%] ", ""):gsub("^%s*(.-)%s*$", "%1")
-      Executor.trigger_set_command_input(partial_command, function()
-        Executor.run()
-      end)
-    else
-      Executor.set_task_command(chosen_option)
-      Executor.run()
-    end
-  end)
+  Public.commands.show_presets()
 end, {})
 
 vim.api.nvim_create_user_command("ExecutorShowHistory", function()
-  Output.history_menu(Executor._state.command_history, function(chosen_option)
-    Executor.set_task_command(chosen_option)
-    Executor.run()
-  end)
+  Public.commands.show_history()
 end, {})
 
 vim.api.nvim_create_user_command("ExecutorOneOff", function(data)
-  Executor.run(data.args)
+  Public.commands.run_one_off(data.args)
 end, { nargs = "*" })
 
 return Public
