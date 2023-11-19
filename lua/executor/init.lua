@@ -78,4 +78,8 @@ vim.api.nvim_create_user_command("ExecutorShowHistory", function()
   end)
 end, {})
 
+vim.api.nvim_create_user_command("ExecutorOneOff", function(data)
+  Executor.run(data.args)
+end, { nargs = "*" })
+
 return Public
