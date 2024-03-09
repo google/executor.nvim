@@ -1,4 +1,4 @@
-*executor.txt*          For NVIM v0.8.0          Last change: 2023 November 25
+*executor.txt*            For NVIM v0.8.0           Last change: 2024 March 09
 
 ==============================================================================
 Table of Contents                                 *executor-table-of-contents*
@@ -196,7 +196,6 @@ the default options.
        },
      },
      -- Filter output from commands. See *filtering_output* below for more
-     details.
      output_filter = function(command, lines)
        return lines
      end,
@@ -216,6 +215,14 @@ the default options.
           },
           style = "rounded",
        },
+     },
+     statusline = {
+       prefix = "Executor: "
+        icons = {
+          in_progress = "…",
+          failed = "✖ ",
+          passed = "✓",
+        },
      }
     })
 <
