@@ -83,6 +83,14 @@ M._settings = {
       style = "rounded",
     },
   },
+  statusline = {
+    prefix = "Executor: ",
+    icons = {
+      in_progress = "…",
+      failed = "✖ ",
+      passed = "✓",
+    },
+  },
 }
 
 M.configure = function(config)

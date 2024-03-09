@@ -21,7 +21,7 @@ M.output_for_state = function(state)
   return output
 end
 
-M.statusline_output = function(state)
+M.statusline_output = function(state, config)
   -- We only output to the statusline if either:
   -- 1) we are running currently
   -- 2) we have a prior result to show
@@ -29,18 +29,22 @@ M.statusline_output = function(state)
     return ""
   end
 
-  local prefix = "[Executor: "
+  local prefix = "[" .. config.prefix_text
   local suffix = "]"
   -- By default, assume the test failed.
-  local result = "✖ "
+  local result = config.icons.failed
 
   if state.running then
-    result = "…"
+    result = config.icons.in_progress
   elseif state.last_exit_code == 0 then
-    result = "✓"
+    result = config.icons.passed
   end
 
-  return prefix .. result .. suffix
+  return table.concat({
+    prefix,
+    result,
+    suffix,
+  })
 end
 
 M._clean_lines = function(input_lines)

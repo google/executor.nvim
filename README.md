@@ -177,7 +177,6 @@ require('executor').setup({
    },
  },
  -- Filter output from commands. See *filtering_output* below for more
- details.
  output_filter = function(command, lines)
    return lines
  end,
@@ -197,6 +196,14 @@ require('executor').setup({
       },
       style = "rounded",
    },
+ },
+ statusline = {
+   prefix = "Executor: "
+    icons = {
+      in_progress = "…",
+      failed = "✖ ",
+      passed = "✓",
+    },
  }
 })
 ```

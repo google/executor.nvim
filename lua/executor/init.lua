@@ -22,7 +22,7 @@ Public.setup = function(config)
 end
 
 Public.statusline = function()
-  return Output.statusline_output(Executor._state)
+  return Output.statusline_output(Executor._state, Executor._settings.statusline)
 end
 
 Public.commands = {
