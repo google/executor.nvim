@@ -28,44 +28,52 @@ describe("Executor", function()
   end)
 
   describe("statusline", function()
+    local statusline_config = {
+      prefix_text = "prefix_text",
+      icons = {
+        in_progress = ".",
+        failed = "F",
+        passed = "P",
+      },
+    }
     it("returns nothing if there is no prior run and we are not running", function()
       local output = Output.statusline_output({
         last_exit_code = nil,
         running = false,
-      })
+      }, statusline_config)
       assert.are.same(output, "")
     end)
 
-    it("returns an ellipsis if we are running", function()
+    it("returns the prefix + in progress icon if we are running", function()
       local output = Output.statusline_output({
         last_exit_code = nil,
         running = true,
-      })
-      assert.are.same(output, "[Executor: …]")
+      }, statusline_config)
+      assert.are.same(output, "[prefix_text.]")
     end)
 
-    it("returns an ellipsis if we are running even if there is prior output", function()
+    it("returns prefix + in progress if we are running even if there is prior output", function()
       local output = Output.statusline_output({
         last_exit_code = 0,
         running = true,
-      })
-      assert.are.same(output, "[Executor: …]")
+      }, statusline_config)
+      assert.are.same(output, "[prefix_text.]")
     end)
 
-    it("returns a cross if the last run failed", function()
+    it("returns the prefix + failed text if the last run failed", function()
       local output = Output.statusline_output({
         last_exit_code = 1,
         running = false,
-      })
-      assert.are.same(output, "[Executor: ✖ ]")
+      }, statusline_config)
+      assert.are.same(output, "[prefix_textF]")
     end)
 
-    it("returns a tick if the last run succeeded", function()
+    it("returns prefix + succeeded text if the last run succeeded", function()
       local output = Output.statusline_output({
         last_exit_code = 0,
         running = false,
-      })
-      assert.are.same(output, "[Executor: ✓]")
+      }, statusline_config)
+      assert.are.same(output, "[prefix_textP]")
     end)
   end)
 end)
