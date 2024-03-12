@@ -93,17 +93,17 @@ These options are all available via the Lua API also:
 ```lua
 local executor = require("executor")
 
-exector.commands.reset()
-exector.commands.swap_to_split()
-exector.commands.swap_to_popup()
-exector.commands.show_detail()
-exector.commands.hide_detail()
-exector.commands.toggle_detail()
-exector.commands.set_command()
-exector.commands.run()
-exector.commands.show_presets()
-exector.commands.show_history()
-exector.commands.run_one_off(cmd)
+executor.commands.reset()
+executor.commands.swap_to_split()
+executor.commands.swap_to_popup()
+executor.commands.show_detail()
+executor.commands.hide_detail()
+executor.commands.toggle_detail()
+executor.commands.set_command()
+executor.commands.run()
+executor.commands.show_presets()
+executor.commands.show_history()
+executor.commands.run_one_off(cmd)
 ```
 
 You can therefore map the Vim commands to a key:
