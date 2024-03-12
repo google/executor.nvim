@@ -156,6 +156,7 @@ M._state = {
 M.reset = function()
   M._state.last_exit_code = nil
   M._state.last_stdout = nil
+  M._state.running = false
   M._stored_task_command = nil
 end
 
@@ -452,6 +453,25 @@ M.run = function(one_off_command)
   else
     M.run_task()
   end
+end
+
+M.current_status = function()
+  local state = M._state
+  local never_run = state.last_exit_code == nil and state.running == false
+
+  if never_run then
+    return "NEVER_RUN"
+  end
+
+  if state.running then
+    return "IN_PROGRESS"
+  end
+
+  if state.last_exit_code == 0 then
+    return "PASSED"
+  end
+
+  return "FAILED"
 end
 
 return M

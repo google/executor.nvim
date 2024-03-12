@@ -214,6 +214,11 @@ Executor will pop up when a task succeeds or fails, but you can also include it
 in your status line. Use `require('executor').statusline()` to generate the
 output.
 
+If you want more control and to build a custom experience, you can call
+`require('executor').current_status()`. This will return a string containing
+either `NEVER_RUN`, `IN_PROGRESS`, `FAILED` or `PASSED`. You can then use this
+to customise and output a dynamic statusbar as you wish.
+
 ## Filtering output
 
 Executor provides a hook for you to filter any output from a task before it's

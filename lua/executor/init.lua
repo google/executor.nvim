@@ -25,6 +25,10 @@ Public.statusline = function()
   return Output.statusline_output(Executor._state, Executor._settings.statusline)
 end
 
+Public.current_status = function()
+  return Executor.current_status()
+end
+
 Public.commands = {
   reset = function()
     Executor.reset()
