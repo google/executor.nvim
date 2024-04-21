@@ -22,6 +22,20 @@ Install via your favourite plugin manager. **You also need to install
 [`nui.nvim`](https://github.com/MunifTanjim/nui.nvim)** as this plugin depends
 on it.
 
+For example, if you use Lazy.nvim you will want something like:
+
+```lua
+{
+  "google/executor.nvim",
+  dependencies = {
+    "MunifTanjim/nui.nvim",
+  },
+  config = function()
+    -- your setup here
+  end,
+},
+```
+
 And then call the `setup` method:
 
 ```lua
@@ -134,21 +148,6 @@ require('executor').setup({
  -- Set this to `false` to use a popup.
  use_split = true,
 
-  -- Configure the width of the input prompt when setting a command.
-  input = {
-    width = math.floor(vim.o.columns * 4/5),
-    -- Border styles
-   border = {
-      style = "rounded",
-      padding = {
-        top = 1,
-        bottom = 1,
-        left = 2,
-        right = 2,
-      },
-   },
-  },
-
  -- Configure the split. These are ignored if you are using a popup.
  split = {
    -- One of "top", "right", "bottom" or "left"
@@ -207,6 +206,8 @@ require('executor').setup({
  }
 })
 ```
+
+If you want to customise the input UI or select UI, these use `vim.ui.input` and `vim.ui.select`, so you should find your favourite plugin that overrides those.
 
 ## Status line
 
