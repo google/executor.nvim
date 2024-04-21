@@ -56,6 +56,9 @@ Public.commands = {
   end,
   show_presets = function()
     Output.preset_menu(Executor._settings.preset_commands, function(chosen_option)
+      if chosen_option == nil then
+        return
+      end
       if string.find(chosen_option, "[partial] ", 1, true) then
         local partial_command = chosen_option:gsub("%[partial%] ", ""):gsub("^%s*(.-)%s*$", "%1")
         Executor.trigger_set_command_input(partial_command, function()
@@ -69,6 +72,9 @@ Public.commands = {
   end,
   show_history = function()
     Output.history_menu(Executor._state.command_history, function(chosen_option)
+      if chosen_option == nil then
+        return
+      end
       Executor.set_task_command(chosen_option)
       Executor.run()
     end)

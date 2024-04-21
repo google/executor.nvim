@@ -84,109 +84,55 @@ M.write_data = function(cmd, bufnr, filter_function, input_lines)
 end
 
 M.preset_menu = function(preset_commands_by_directory, callback_after_choice)
-  local Menu = require("nui.menu")
   local cwd = vim.loop.cwd()
-  local found_options = {}
+  local select_options = {}
   for directory_name, directory_commands in pairs(preset_commands_by_directory) do
     if string.find(cwd, directory_name, 1, true) then
       for _, command in ipairs(directory_commands) do
         if type(command) == "string" then
-          table.insert(found_options, Menu.item(command))
+          table.insert(select_options, command)
         elseif command.partial == true then
           local final_cmd = command.cmd
           if type(command.cmd) == "function" then
             final_cmd = command.cmd()
           end
-          table.insert(found_options, Menu.item("[partial] " .. final_cmd))
+          table.insert(select_options, "[partial] " .. final_cmd)
         elseif type(command.cmd) == "function" then
           -- Allow a command to be a function that is executed per-buffer.
           local final_cmd = command.cmd()
-          table.insert(found_options, Menu.item(final_cmd))
+          table.insert(select_options, final_cmd)
         end
       end
     end
   end
 
-  if #found_options == 0 then
+  if #select_options == 0 then
     print("Executor.nvim: No stored commands found for this working directory.")
     return
   end
 
-  local menu = Menu({
-    position = "50%",
-    relative = "editor",
-    size = {
-      width = "80%",
-      height = math.max(10, #found_options),
-    },
-    border = {
-      style = "single",
-      text = {
-        top = "Executor.nvim: choose a command",
-        top_align = "center",
-      },
-    },
-    win_options = {
-      winhighlight = "Normal:Normal,FloatBorder:Normal",
-    },
-  }, {
-    lines = found_options,
-    max_width = 45,
-    keymap = {
-      focus_next = { "j", "<Down>", "<Tab>" },
-      focus_prev = { "k", "<Up>", "<S-Tab>" },
-      close = { "<Esc>", "<C-c>", "q" },
-      submit = { "<CR>", "<Space>" },
-    },
-    on_submit = function(item)
-      callback_after_choice(item.text)
-    end,
-  })
-  menu:mount()
+  vim.ui.select(select_options, {
+    prompt = "[Executor.nvim] choose a command: ",
+  }, function(choice)
+    callback_after_choice(choice)
+  end)
 end
+
 M.history_menu = function(command_history, callback_after_choice)
   if #command_history == 0 then
     print("Executor.nvim: No command history to show.")
     return
   end
 
-  local Menu = require("nui.menu")
   local menu_items = {}
-  for key, command in pairs(command_history) do
-    table.insert(menu_items, Menu.item(command))
+  for _, command in pairs(command_history) do
+    table.insert(menu_items, command)
   end
-
-  local menu = Menu({
-    position = "50%",
-    relative = "editor",
-    size = {
-      width = "80%",
-      height = math.max(10, #command_history),
-    },
-    border = {
-      style = "single",
-      text = {
-        top = "Executor.nvim: choose a command from the history",
-        top_align = "center",
-      },
-    },
-    win_options = {
-      winhighlight = "Normal:Normal,FloatBorder:Normal",
-    },
-  }, {
-    lines = menu_items,
-    max_width = 45,
-    keymap = {
-      focus_next = { "j", "<Down>", "<Tab>" },
-      focus_prev = { "k", "<Up>", "<S-Tab>" },
-      close = { "<Esc>", "<C-c>", "q" },
-      submit = { "<CR>", "<Space>" },
-    },
-    on_submit = function(item)
-      callback_after_choice(item.text)
-    end,
-  })
-  menu:mount()
+  vim.ui.select(menu_items, {
+    prompt = "[Executor.nvim] choose an historical command: ",
+  }, function(choice)
+    callback_after_choice(choice)
+  end)
 end
 
 return M

@@ -98,48 +98,12 @@ M.configure = function(config)
 end
 
 M.trigger_set_command_input = function(initial_input_value, callback_fn)
-  local input_component = Input({
-    relative = "editor",
-    position = "50%",
-    size = {
-      width = M._settings.input.width,
-    },
-    border = {
-      style = M._settings.input.border.style,
-      padding = M._settings.input.border.padding,
-      text = {
-        top = "Executor.nvim: enter a command to run",
-        top_align = "center",
-      },
-    },
-    win_options = {
-      winhighlight = "Normal:Normal,FloatBorder:FloatBorder",
-    },
-  }, {
-    prompt = "> ",
-    default_value = initial_input_value or "",
-    on_submit = function(value)
-      M.set_task_command(value)
-      callback_fn()
-    end,
-    on_close = function()
-      -- Nothing to do here.
-    end,
-  })
-
-  -- Make <ESC> close the input
-  input_component:map("n", "<Esc>", function()
-    input_component:unmount()
-  end, { noremap = true })
-
-  -- Make q close the input.
-  input_component:map("n", "q", function()
-    input_component:unmount()
-  end, { noremap = true })
-
-  input_component:mount()
-  input_component:on(event.BufLeave, function()
-    input_component:unmount()
+  vim.ui.input({
+    prompt = "[Executor.nvim] enter a command to run: ",
+    default = initial_input_value or "",
+  }, function(choice)
+    M.set_task_command(choice)
+    callback_fn()
   end)
 end
 
