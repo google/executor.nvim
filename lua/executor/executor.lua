@@ -15,7 +15,6 @@ limitations under the License.
 
 local Popup = require("nui.popup")
 local Split = require("nui.split")
-local Input = require("nui.input")
 local event = require("nui.utils.autocmd").event
 
 local Output = require("executor.output")
@@ -37,18 +36,6 @@ end
 
 M._settings = {
   use_split = true,
-  input = {
-    width = math.floor(vim.o.columns * 4 / 5),
-    border = {
-      style = "rounded",
-      padding = {
-        top = 1,
-        bottom = 1,
-        left = 2,
-        right = 2,
-      },
-    },
-  },
   split = {
     position = "right",
     size = SPLIT_WIDTH,
