@@ -25,6 +25,13 @@ Public.statusline = function()
   return Output.statusline_output(Executor._state, Executor._settings.statusline)
 end
 
+Public.last_command = function()
+  return {
+    cmd = Executor._state.last_command,
+    one_off = Executor._state.last_command_was_one_off,
+  }
+end
+
 Public.current_status = function()
   return Executor.current_status()
 end

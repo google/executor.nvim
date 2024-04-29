@@ -99,6 +99,10 @@ M._state = {
   running = false,
   last_stdout = nil,
   last_exit_code = nil,
+  -- Updated with the last command that was run. This will be
+  -- updated for one_off tasks
+  last_command = nil,
+  last_command_was_one_off = false,
   showing_detail = false,
   notification_timer = nil,
   command_history = {},
@@ -109,6 +113,8 @@ M.reset = function()
   M._state.last_stdout = nil
   M._state.running = false
   M._stored_task_command = nil
+  M._state.last_command_was_one_off = false
+  M._state.last_command = nil
 end
 
 M.set_task_command = function(cmd)
@@ -292,6 +298,8 @@ M.run_task = function(one_off_command)
   if cmd == nil then
     return
   end
+  M._state.last_command = cmd
+  M._state.last_command_was_one_off = one_off_command ~= nil
 
   M._state.running = true
   if M._settings.notifications.task_started then

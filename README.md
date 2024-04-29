@@ -220,6 +220,8 @@ If you want more control and to build a custom experience, you can call
 either `NEVER_RUN`, `IN_PROGRESS`, `FAILED` or `PASSED`. You can then use this
 to customise and output a dynamic statusbar as you wish.
 
+You can also call `require('executor).last_command()` which returns a table with two fields: `cmd`, which is the last command that was run, and `one_off`, which is a boolean indicating if the last command you executed was a one off command (via `:ExecutorOneOff`).
+
 ## Filtering output
 
 Executor provides a hook for you to filter any output from a task before it's
