@@ -327,7 +327,7 @@ M._show_popup = function()
   end
 
   if M._popup == nil then
-    local title = "Task finished"
+    local title = "Finished: " .. M._state.last_command
     local output = Output.output_for_state(M._state)
 
     if M._state.last_exit_code > 0 then
