@@ -83,7 +83,7 @@ M.write_data = function(cmd, bufnr, filter_function, input_lines)
   vim.api.nvim_chan_send(channel_id, table.concat(trimmed_lines, "\n"))
 end
 
-M.preset_menu = function(preset_commands_by_directory, callback_after_choice)
+M.preset_menu = function(current_stored_command, preset_commands_by_directory, callback_after_choice)
   local cwd = vim.loop.cwd()
   local select_options = {}
   for directory_name, directory_commands in pairs(preset_commands_by_directory) do
@@ -109,6 +109,10 @@ M.preset_menu = function(preset_commands_by_directory, callback_after_choice)
   if #select_options == 0 then
     print("Executor.nvim: No stored commands found for this working directory.")
     return
+  end
+
+  if current_stored_command ~= nil then
+    table.insert(select_options, "[current] " .. current_stored_command)
   end
 
   vim.ui.select(select_options, {

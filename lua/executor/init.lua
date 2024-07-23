@@ -62,7 +62,7 @@ Public.commands = {
     Executor.run()
   end,
   show_presets = function()
-    Output.preset_menu(Executor._settings.preset_commands, function(chosen_option)
+    Output.preset_menu(Executor._stored_task_command, Executor._settings.preset_commands, function(chosen_option)
       if chosen_option == nil then
         return
       end
@@ -71,6 +71,9 @@ Public.commands = {
         Executor.trigger_set_command_input(partial_command, function()
           Executor.run()
         end)
+      elseif string.find(chosen_option, "[current] ", 1, true) then
+        -- No need to set the command, just run it, as the user has picked the current command.
+        Executor.run()
       else
         Executor.set_task_command(chosen_option)
         Executor.run()
