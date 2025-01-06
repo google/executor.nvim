@@ -28,7 +28,7 @@ end
 Public.last_command = function()
   return {
     cmd = Executor._state.last_command,
-    one_off = Executor._state.last_command_was_one_off,
+    one_off = Executor._state.in_one_off_mode,
   }
 end
 
@@ -90,7 +90,7 @@ Public.commands = {
     end)
   end,
   run_one_off = function(one_off_command)
-    Executor.run(one_off_command)
+    Executor.run_one_off_cmd(one_off_command)
   end,
 }
 

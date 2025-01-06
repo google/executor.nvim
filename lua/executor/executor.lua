@@ -89,8 +89,10 @@ M.trigger_set_command_input = function(initial_input_value, callback_fn)
     prompt = "[Executor.nvim] enter a command to run: ",
     default = initial_input_value or "",
   }, function(choice)
-    M.set_task_command(choice)
-    callback_fn()
+    if M._state.in_one_off_mode == false then
+      M.set_task_command(choice)
+    end
+    callback_fn(choice)
   end)
 end
 
@@ -99,10 +101,10 @@ M._state = {
   running = false,
   last_stdout = nil,
   last_exit_code = nil,
-  -- Updated with the last command that was run. This will be
-  -- updated for one_off tasks
+  -- Updated with the last command that was run.
+  --This will not be updated for one_off tasks
   last_command = nil,
-  last_command_was_one_off = false,
+  in_one_off_mode = false,
   showing_detail = false,
   notification_timer = nil,
   command_history = {},
@@ -113,7 +115,7 @@ M.reset = function()
   M._state.last_stdout = nil
   M._state.running = false
   M._stored_task_command = nil
-  M._state.last_command_was_one_off = false
+  M._state.in_one_off_mode = false
   M._state.last_command = nil
 end
 
@@ -299,11 +301,10 @@ M.run_task = function(one_off_command)
     return
   end
   M._state.last_command = cmd
-  M._state.last_command_was_one_off = one_off_command ~= nil
 
   M._state.running = true
   if M._settings.notifications.task_started then
-    M._show_notification("⟳ " .. M._stored_task_command, false)
+    M._show_notification("⟳ " .. cmd, false)
   end
   -- Force the statusline to redraw.
   vim.api.nvim_exec([[let &stl=&stl]], false)
@@ -400,11 +401,20 @@ M.hide_detail = function()
   end
 end
 
-M.run = function(one_off_command)
-  if one_off_command ~= nil then
-    M.run_task(one_off_command)
-    return
+M.run_one_off_cmd = function(predefined_cmd)
+  M._state.in_one_off_mode = true
+  if predefined_cmd ~= nil then
+    M.run_task(predefined_cmd)
+  else
+    M.trigger_set_command_input("", function(cmd)
+      M.run_task(cmd)
+    end)
   end
+end
+
+M.run = function()
+  M._state.in_one_off_mode = false
+
   if M._stored_task_command == nil then
     M.trigger_set_command_input("", function()
       M.run_task()

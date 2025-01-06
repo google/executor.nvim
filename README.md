@@ -100,7 +100,7 @@ Available commands:
   stored command. Useful if your last run was a while ago, and the status
   output on your statusline is no longer relevant.
 
-- `ExecutorOneOff [cmd]`: runs the provided command and shows the results, but does not overwrite your stored command.
+- `ExecutorOneOff [cmd]`: runs the provided command and shows the results, but does not overwrite your stored command. Call this without a `cmd` to be prompted. This command will not be stored for future runs.
 
 These options are all available via the Lua API also:
 
