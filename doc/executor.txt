@@ -1,4 +1,4 @@
-*executor.txt*            For NVIM v0.8.0            Last change: 2024 July 23
+*executor.txt*           For NVIM v0.8.0          Last change: 2025 January 06
 
 ==============================================================================
 Table of Contents                                 *executor-table-of-contents*
@@ -118,7 +118,8 @@ Available commands:
     command. Useful if your last run was a while ago, and the status output on your
     statusline is no longer relevant.
 - `ExecutorOneOff [cmd]`: runs the provided command and shows the results, but
-    does not overwrite your stored command.
+    does not overwrite your stored command. Call this without a `cmd` to be
+    prompted. This command will not be stored for future runs.
 
 These options are all available via the Lua API also:
 
