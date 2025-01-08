@@ -1,4 +1,4 @@
-*executor.txt*           For NVIM v0.8.0          Last change: 2025 January 06
+*executor.txt*           For NVIM v0.8.0          Last change: 2025 January 08
 
 ==============================================================================
 Table of Contents                                 *executor-table-of-contents*
