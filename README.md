@@ -76,7 +76,7 @@ Available commands:
   does not exist. Use `<Esc>` or `q` in the initial text prompt to cancel.
 
 - `ExecutorSetCommand`: change the command that runs when `ExecutorRun` is
-  invoked. You can use `<Esc>` or `q` in normal mode to cancel this command.
+  invoked. You can use `<Esc>` or `q` in normal mode to cancel this command. This does not run the command.
 
 - `ExecutorShowDetail`: reveal the details window for the last execution run.
 
@@ -102,6 +102,8 @@ Available commands:
 
 - `ExecutorOneOff [cmd]`: runs the provided command and shows the results, but does not overwrite your stored command. Call this without a `cmd` to be prompted. This command will not be stored for future runs.
 
+- `ExecutorRunWithNewCommand`: will prompt for a new command, which will be saved and then immediately executed. Equivalent to calling `ExecutorSetCommand` followed by `ExecutorRun`.
+
 These options are all available via the Lua API also:
 
 ```lua
@@ -115,6 +117,7 @@ executor.commands.hide_detail()
 executor.commands.toggle_detail()
 executor.commands.set_command()
 executor.commands.run()
+executor.commands.run_with_new_command()
 executor.commands.show_presets()
 executor.commands.show_history()
 executor.commands.run_one_off(cmd)
@@ -151,7 +154,7 @@ For example:
 
 It will run `npm run test --file=app/app.test.ts`.
 
-The placeholder is replaced at execution time, every time, so if you then navigate to `app/util.test.ts` and run the same command, you will run `npm run test --file=app/util.test.ts`.
+The placeholder is replaced **only once when the command is first stored**. If you navigate to another file, **the placeholder is not updated** and you would need to re-run `:ExecutorSetComand`
 
 If there are other placeholder values that would be useful to you, please raise an issue.
 

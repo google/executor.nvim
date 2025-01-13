@@ -26,6 +26,11 @@ local POPUP_WIDTH = math.floor(vim.o.columns * 3 / 5)
 local POPUP_HEIGHT = vim.o.lines - 20
 local SPLIT_WIDTH = math.floor(vim.o.columns * 1 / 4)
 
+-- TODO: move this somewhere else
+local function get_relative_buffer_name(buf_id)
+  return vim.fn.fnamemodify(vim.api.nvim_buf_get_name(buf_id), ":.")
+end
+
 local table_contains = function(table, element)
   for _, value in pairs(table) do
     if value == element then
@@ -105,8 +110,6 @@ M._state = {
   -- Updated with the last command that was run.
   --This will not be updated for one_off tasks
   last_command = nil,
-  -- Last command with any placeholders updated.
-  last_command_resolved = nil,
   in_one_off_mode = false,
   showing_detail = false,
   notification_timer = nil,
@@ -121,14 +124,14 @@ M.reset = function()
   M._stored_task_command = nil
   M._state.in_one_off_mode = false
   M._state.last_command = nil
-  M._state.last_command_resolved = nil
   M._state.last_active_buf_id = nil
 end
 
 M.set_task_command = function(cmd)
-  M._stored_task_command = cmd
-  if not table_contains(M._state.command_history, cmd) then
-    table.insert(M._state.command_history, cmd)
+  local final_cmd = M._replace_placeholders(cmd)
+  M._stored_task_command = final_cmd
+  if not table_contains(M._state.command_history, final_cmd) then
+    table.insert(M._state.command_history, final_cmd)
   end
 end
 
@@ -289,9 +292,16 @@ M._show_notification = function(text, timeout)
   end
 end
 
--- TODO: move this somewhere else
-local function get_relative_buffer_name(buf_id)
-  return vim.fn.fnamemodify(vim.api.nvim_buf_get_name(buf_id), ":.")
+-- Resolve any placeholders ($E_FN) in the command, and then store it.
+-- This means that $E_FN only acts as a placeholder once; the stored command
+-- that will be re-run has the replacement value, NOT the placeholder.
+M._replace_placeholders = function(cmd)
+  local final_cmd = cmd
+  if Template.has_placeholder(cmd) then
+    local file_name = get_relative_buffer_name(M._state.last_active_buf_id)
+    final_cmd = Template.replace_placeholders(cmd, file_name)
+  end
+  return final_cmd
 end
 
 M.run_task = function(one_off_command)
@@ -311,21 +321,16 @@ M.run_task = function(one_off_command)
   if cmd == nil then
     return
   end
-  M._state.last_command = cmd
+
+  local final_cmd = M._replace_placeholders(cmd)
+  M._state.last_command = final_cmd
 
   M._state.running = true
   if M._settings.notifications.task_started then
-    M._show_notification("⟳ " .. cmd, false)
+    M._show_notification("⟳ " .. final_cmd, false)
   end
   -- Force the statusline to redraw.
   vim.api.nvim_exec([[let &stl=&stl]], false)
-
-  local final_cmd = cmd
-  if Template.has_placeholder(cmd) then
-    local file_name = get_relative_buffer_name(M._state.last_active_buf_id)
-    final_cmd = Template.replace_placeholders(cmd, file_name)
-  end
-  M._state.last_command_resolved = final_cmd
 
   vim.fn.jobstart(final_cmd, {
     -- pty means that stderr is ignored, and all output goes to stdout, so
@@ -346,7 +351,7 @@ M._show_popup = function()
   end
 
   if M._popup == nil then
-    local title = "Finished: " .. M._state.last_command_resolved
+    local title = "Finished: " .. M._state.last_command
     local output = Output.output_for_state(M._state)
 
     if M._state.last_exit_code > 0 then
@@ -430,7 +435,10 @@ M.run_one_off_cmd = function(predefined_cmd)
   end
 end
 
-M.run = function()
+M.run = function(clear_existing_command)
+  if clear_existing_command == true then
+    M._stored_task_command = nil
+  end
   M._state.in_one_off_mode = false
   M._state.last_active_buf_id = vim.api.nvim_get_current_buf()
 
