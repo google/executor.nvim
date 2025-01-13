@@ -61,6 +61,9 @@ Public.commands = {
   run = function()
     Executor.run()
   end,
+  run_with_new_command = function()
+    Executor.run(true)
+  end,
   show_presets = function()
     Output.preset_menu(Executor._stored_task_command, Executor._settings.preset_commands, function(chosen_option)
       if chosen_option == nil then
@@ -125,6 +128,10 @@ end, {})
 vim.api.nvim_create_user_command("ExecutorRun", function()
   Public.commands.run()
 end, { bang = true, nargs = "*" })
+
+vim.api.nvim_create_user_command("ExecutorRunWithNewCommand", function()
+  Public.commands.run_with_new_command()
+end, {})
 
 vim.api.nvim_create_user_command("ExecutorShowPresets", function()
   Public.commands.show_presets()
