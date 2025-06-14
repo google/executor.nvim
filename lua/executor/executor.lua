@@ -84,6 +84,10 @@ M._settings = {
       passed = "✓",
     },
   },
+  callbacks = {
+    ---@diagnostic disable-next-line: unused-local
+    on_complete = function(_cmd, _code, _stdout) end,
+  },
 }
 
 M.configure = function(config)
@@ -248,6 +252,7 @@ M._on_exit = function(_, exit_code)
   -- it.
 
   local output = Output.output_for_state(M._state)
+
   if M._popup and M._popup.winid then
     Output.write_data(M._stored_task_command, M._popup.bufnr, M._settings.output_filter, output)
   end
@@ -262,6 +267,8 @@ M._on_exit = function(_, exit_code)
       M._show_notification("✓ Task success!", true)
     end
   end
+
+  M._settings.callbacks.on_complete(M._state.last_command, exit_code, output)
   -- Force the statusline to redraw.
   vim.api.nvim_exec([[let &stl=&stl]], false)
 end
