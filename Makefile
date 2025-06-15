@@ -7,7 +7,7 @@ clone-panvimdoc:
 		echo "Cloning panvimdoc..."; \
 		git clone https://github.com/kdheepak/panvimdoc .panvimdoc-clone; \
 	else \
-		@echo "Updating panvimdoc..."; \
+		echo "Updating panvimdoc..."; \
 		cd .panvimdoc-clone && git pull; \
 	fi
 
