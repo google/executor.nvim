@@ -217,8 +217,7 @@ require('executor').setup({
       },
       style = "rounded",
    },
- },
- statusline = {
+ } = {
    prefix = "Executor: "
     icons = {
       in_progress = "…",
@@ -357,3 +356,24 @@ Using `:ExecutorShowHistory` will reveal a popup menu which shows all the
 commands you have used Executor to run (limited to that session only - they are
 not persisted). Picking one of these options will then set it as the new
 default task and run it.
+
+## Contributing
+
+### Vimdoc pre-push hook
+
+After cloning this repository, run:
+
+```bash
+make setup-hooks
+```
+
+This will install git hooks that ensure documentation stays up to date.
+
+### Running Tests
+
+To run the test suite, you need to have [luarocks](https://luarocks.org/) and [busted](https://lunarmodules.github.io/busted/) installed:
+
+```bash
+luarocks install busted
+make test
+```

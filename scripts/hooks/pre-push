@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# Run check-docs to ensure documentation is up to date
+make check-docs
+
+# Check if command succeeded
+if [ $? -ne 0 ]; then
+    echo "Documentation check failed - push aborted"
+    exit 1
+fi
+
+# If successful, allow push to continue
+exit 0
