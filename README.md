@@ -225,6 +225,11 @@ require('executor').setup({
       failed = "✖ ",
       passed = "✓",
     },
+ },
+ callbacks = {
+  -- Called when a task completes so you can hook into the lifecycle.
+   on_complete = function(last_cmd, exit_code, stdout)
+   end
  }
 })
 ```
