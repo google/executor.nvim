@@ -4,7 +4,7 @@ test:
 # Clone panvimdoc repo locally if it doesn't exist, then update it
 clone-panvimdoc:
 	@if [ ! -d .panvimdoc-clone ]; then \
-		@echo "Cloning panvimdoc..."; \
+		echo "Cloning panvimdoc..."; \
 		git clone https://github.com/kdheepak/panvimdoc .panvimdoc-clone; \
 	else \
 		@echo "Updating panvimdoc..."; \

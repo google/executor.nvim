@@ -217,7 +217,8 @@ require('executor').setup({
       },
       style = "rounded",
    },
- } = {
+ },
+ statusline = {
    prefix = "Executor: "
     icons = {
       in_progress = "…",
