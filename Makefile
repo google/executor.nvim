@@ -24,7 +24,7 @@ vimdoc: clone-panvimdoc
 		--dedup-subheadings true \
 		--increment-heading-level-by 0
 
-check-docs: vimdoc
+check-docs:
 	@make vimdoc
 	@if [ -n "$$(git status --porcelain)" ]; then \
 		echo "Git status is not clean after generating docs"; \
