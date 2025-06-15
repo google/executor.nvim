@@ -246,7 +246,8 @@ the default options.
           },
           style = "rounded",
        },
-     } = {
+     },
+     statusline = {
        prefix = "Executor: "
         icons = {
           in_progress = "…",
