@@ -12,8 +12,9 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: docker://pandoc/core:3.5
-    - name: Run vimdoc
+    - name: Make scripts dir
       run: mkdir /scripts
+    - name: Run vimdoc
       run: make vimdoc
     - name: Check for changes
       run: |
