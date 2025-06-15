@@ -1,0 +1,25 @@
+name: Verify Documentation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  verify-docs:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Run vimdoc
+      run: make vimdoc
+    - name: Check for changes
+      run: |
+        if [ -n "$(git status --porcelain)" ]; then
+          echo "Documentation is out of date. Please run 'make vimdoc' and commit the changes."
+          git status
+          git diff
+          exit 1
+        else
+          echo "Documentation is up to date."
+        fi

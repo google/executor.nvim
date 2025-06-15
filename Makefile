@@ -1,9 +1,18 @@
 test:
 	busted lua/tests
 
-# Assumes $HOME/git/panvimdoc is a clone of https://github.com/kdheepak/panvimdoc
-vimdoc:
-	../panvimdoc/panvimdoc.sh \
+# Clone panvimdoc repo locally if it doesn't exist, then update it
+clone-panvimdoc:
+	@if [ ! -d .panvimdoc-clone ]; then \
+		echo "Cloning panvimdoc..."; \
+		git clone https://github.com/kdheepak/panvimdoc .panvimdoc-clone; \
+	else \
+		echo "Updating panvimdoc..."; \
+		cd .panvimdoc-clone && git pull; \
+	fi
+
+vimdoc: clone-panvimdoc
+	./.panvimdoc-clone/panvimdoc.sh \
 		--project-name executor \
 		--input-file README.md \
 		--toc true \
