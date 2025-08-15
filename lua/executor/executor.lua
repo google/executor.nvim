@@ -95,6 +95,10 @@ M.trigger_set_command_input = function(initial_input_value, callback_fn)
     prompt = "[Executor.nvim] enter a command to run: ",
     default = initial_input_value or "",
   }, function(choice)
+    if choice == nil or #choice == 0 then
+      return
+    end
+
     if M._state.in_one_off_mode == false then
       M.set_task_command(choice)
     end
