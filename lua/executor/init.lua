@@ -97,6 +97,11 @@ Public.commands = {
   end,
 }
 
+Public.api = {
+  set_task_command = Executor.set_task_command,
+  run_task = Executor.run_task,
+}
+
 vim.api.nvim_create_user_command("ExecutorReset", function()
   Public.commands.reset()
 end, {})

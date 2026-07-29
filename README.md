@@ -121,6 +121,10 @@ executor.commands.run_with_new_command()
 executor.commands.show_presets()
 executor.commands.show_history()
 executor.commands.run_one_off(cmd)
+
+-- some minimal API which does not trigger user interactions
+executor.api.set_task_command(cmd)
+executor.api.run_task(cmd?)
 ```
 
 You can therefore map the Vim commands to a key:
