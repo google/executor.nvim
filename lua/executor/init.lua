@@ -97,6 +97,16 @@ Public.commands = {
   end,
 }
 
+Public.api = {
+  set_task_command = Executor.set_task_command,
+  run_task = function(cmd)
+    if not cmd and not Executor._stored_task_command then
+      error("no command provided as argument and no stored task command found for api.run_task")
+    end
+    Executor.run_task(cmd)
+  end,
+}
+
 vim.api.nvim_create_user_command("ExecutorReset", function()
   Public.commands.reset()
 end, {})
