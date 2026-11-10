@@ -88,7 +88,8 @@ Public.commands = {
       if chosen_option == nil then
         return
       end
-      Executor.set_task_command(chosen_option)
+      -- History entries are already filled in, so store them without filling in $E_FN again.
+      Executor.store_resolved_command(chosen_option)
       Executor.run()
     end)
   end,

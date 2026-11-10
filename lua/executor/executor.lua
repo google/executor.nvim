@@ -131,12 +131,17 @@ M.reset = function()
   M._state.last_active_buf_id = nil
 end
 
-M.set_task_command = function(cmd)
-  local final_cmd = M._replace_placeholders(cmd)
+-- Store a command whose placeholders are already filled in, such as a
+-- history entry, without filling them in again.
+M.store_resolved_command = function(final_cmd)
   M._stored_task_command = final_cmd
   if not table_contains(M._state.command_history, final_cmd) then
     table.insert(M._state.command_history, final_cmd)
   end
+end
+
+M.set_task_command = function(cmd)
+  M.store_resolved_command(M._replace_placeholders(cmd))
 end
 
 M._make_notification_popup = function(text)
@@ -306,21 +311,15 @@ M._show_notification = function(text, timeout)
   end
 end
 
--- Resolve any placeholders ($E_FN) in the command, and then store it.
+-- Resolve any placeholders ($E_FN) in the command.
 -- This means that $E_FN only acts as a placeholder once; the stored command
 -- that will be re-run has the replacement value, NOT the placeholder.
 -- The filename is shell-escaped because jobstart runs the command through &shell.
--- Filenames that contain $E_FN are rejected: a stored command can pass through
--- this function again, and a second substitution would nest the quotes and
--- leave part of the filename unquoted.
+-- Only set_task_command and one-off runs call this function, so each command is filled in once.
 M._replace_placeholders = function(cmd)
   local final_cmd = cmd
   if Template.has_placeholder(cmd) then
-    local raw_file_name = get_relative_buffer_name(M._state.last_active_buf_id)
-    if Template.has_placeholder(raw_file_name) then
-      error("executor.nvim: cannot substitute $E_FN for a filename that contains the text $E_FN", 0)
-    end
-    local file_name = vim.fn.shellescape(raw_file_name)
+    local file_name = vim.fn.shellescape(get_relative_buffer_name(M._state.last_active_buf_id))
     final_cmd = Template.replace_placeholders(cmd, file_name)
   end
   return final_cmd
@@ -339,12 +338,15 @@ M.run_task = function(one_off_command)
     vim.api.nvim_chan_send(channel_id, "")
   end
 
-  local cmd = one_off_command or M._stored_task_command
-  if cmd == nil then
+  -- A stored command is already filled in by set_task_command or store_resolved_command.
+  local final_cmd = M._stored_task_command
+  if one_off_command ~= nil then
+    final_cmd = M._replace_placeholders(one_off_command)
+  end
+  if final_cmd == nil then
     return
   end
 
-  local final_cmd = M._replace_placeholders(cmd)
   M._state.last_command = final_cmd
 
   M._state.running = true
