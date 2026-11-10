@@ -118,8 +118,17 @@ M._state = {
   showing_detail = false,
   notification_timer = nil,
   command_history = {},
+  -- Public entry points in init.lua record this value before any prompt opens.
+  -- Internal code only reads it.
   last_active_buf_id = nil,
 }
+
+-- Record the current buffer for $E_FN. Entry points call this before a
+-- vim.ui prompt or menu opens, because a picker plugin can leave its own
+-- buffer current when its callback runs.
+M.record_active_buffer = function()
+  M._state.last_active_buf_id = vim.api.nvim_get_current_buf()
+end
 
 M.reset = function()
   M._state.last_exit_code = nil
@@ -464,7 +473,6 @@ M.run = function(clear_existing_command)
     M._stored_task_command = nil
   end
   M._state.in_one_off_mode = false
-  M._state.last_active_buf_id = vim.api.nvim_get_current_buf()
 
   if M._stored_task_command == nil then
     M.trigger_set_command_input("", function()

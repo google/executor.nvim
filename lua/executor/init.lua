@@ -56,15 +56,19 @@ Public.commands = {
     Executor.toggle_detail()
   end,
   set_command = function()
+    Executor.record_active_buffer()
     Executor.trigger_set_command_input("", function() end)
   end,
   run = function()
+    Executor.record_active_buffer()
     Executor.run()
   end,
   run_with_new_command = function()
+    Executor.record_active_buffer()
     Executor.run(true)
   end,
   show_presets = function()
+    Executor.record_active_buffer()
     Output.preset_menu(Executor._stored_task_command, Executor._settings.preset_commands, function(chosen_option)
       if chosen_option == nil then
         return
@@ -84,6 +88,7 @@ Public.commands = {
     end)
   end,
   show_history = function()
+    Executor.record_active_buffer()
     Output.history_menu(Executor._state.command_history, function(chosen_option)
       if chosen_option == nil then
         return
@@ -94,13 +99,18 @@ Public.commands = {
     end)
   end,
   run_one_off = function(one_off_command)
+    Executor.record_active_buffer()
     Executor.run_one_off_cmd(one_off_command)
   end,
 }
 
 Public.api = {
-  set_task_command = Executor.set_task_command,
+  set_task_command = function(cmd)
+    Executor.record_active_buffer()
+    Executor.set_task_command(cmd)
+  end,
   run_task = function(cmd)
+    Executor.record_active_buffer()
     if not cmd and not Executor._stored_task_command then
       error("no command provided as argument and no stored task command found for api.run_task")
     end
