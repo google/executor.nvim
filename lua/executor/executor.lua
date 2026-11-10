@@ -310,10 +310,17 @@ end
 -- This means that $E_FN only acts as a placeholder once; the stored command
 -- that will be re-run has the replacement value, NOT the placeholder.
 -- The filename is shell-escaped because jobstart runs the command through &shell.
+-- Filenames that contain $E_FN are rejected: a stored command can pass through
+-- this function again, and a second substitution would nest the quotes and
+-- leave part of the filename unquoted.
 M._replace_placeholders = function(cmd)
   local final_cmd = cmd
   if Template.has_placeholder(cmd) then
-    local file_name = vim.fn.shellescape(get_relative_buffer_name(M._state.last_active_buf_id))
+    local raw_file_name = get_relative_buffer_name(M._state.last_active_buf_id)
+    if Template.has_placeholder(raw_file_name) then
+      error("executor.nvim: cannot substitute $E_FN for a filename that contains the text $E_FN", 0)
+    end
+    local file_name = vim.fn.shellescape(raw_file_name)
     final_cmd = Template.replace_placeholders(cmd, file_name)
   end
   return final_cmd
