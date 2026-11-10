@@ -309,10 +309,11 @@ end
 -- Resolve any placeholders ($E_FN) in the command, and then store it.
 -- This means that $E_FN only acts as a placeholder once; the stored command
 -- that will be re-run has the replacement value, NOT the placeholder.
+-- The filename is shell-escaped because jobstart runs the command through &shell.
 M._replace_placeholders = function(cmd)
   local final_cmd = cmd
   if Template.has_placeholder(cmd) then
-    local file_name = get_relative_buffer_name(M._state.last_active_buf_id)
+    local file_name = vim.fn.shellescape(get_relative_buffer_name(M._state.last_active_buf_id))
     final_cmd = Template.replace_placeholders(cmd, file_name)
   end
   return final_cmd

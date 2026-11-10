@@ -150,13 +150,15 @@ When entering a command into Executor, you can use the string `$E_FN` as a place
 
 When the command is executed it will be replaced by the path to the current buffer, **relative to Neovim's current working directory**.
 
+The filename is shell-quoted automatically, so do not wrap `$E_FN` in quotes. If you previously added your own quotes around `$E_FN`, remove them. For example, `npm run test --file=$E_FN` runs `npm run test --file='app/app.test.ts'`.
+
 For example:
 
 * if your CWD is `~/git/foo` 
 * and you are editing `~/git/foo/app/app.test.ts`
 * if you give Executor the command `npm run test --file=$E_FN`
 
-It will run `npm run test --file=app/app.test.ts`.
+It will run `npm run test --file='app/app.test.ts'`.
 
 The placeholder is replaced **only once when the command is first stored**. If you navigate to another file, **the placeholder is not updated** and you would need to re-run `:ExecutorSetComand`
 

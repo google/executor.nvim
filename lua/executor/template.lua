@@ -9,7 +9,11 @@ M.replace_placeholders = function(input_string, file_name)
     return input_string
   end
 
-  return string.gsub(input_string, "$E_FN", file_name)
+  -- A function replacement inserts file_name literally, so `%` in the filename
+  -- is not treated as a capture reference.
+  return string.gsub(input_string, "$E_FN", function()
+    return file_name
+  end)
 end
 
 return M
